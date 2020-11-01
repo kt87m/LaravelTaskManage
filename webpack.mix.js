@@ -12,7 +12,9 @@ const mix = require('laravel-mix');
  */
 
 mix.ts('resources/ts/index.tsx', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+  .postCss('resources/css/style.css', 'public/css', [
+    require('tailwindcss'),
+  ]);
 
 mix.webpackConfig({
   devServer: {
