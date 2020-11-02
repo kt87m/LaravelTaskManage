@@ -3,12 +3,13 @@
 namespace Tests\Unit;
 
 use App\Models\Task;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 class TaskTest extends TestCase
 {
     /**
-     * A basic unit test example.
+     * 全件取得、属性一致
      *
      * @return void
      */

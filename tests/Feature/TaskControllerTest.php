@@ -9,7 +9,7 @@ use Tests\TestCase;
 class TaskControllerTest extends TestCase
 {
     /**
-     * A basic feature test example.
+     * 全件取得
      *
      * @return void
      */
@@ -19,5 +19,13 @@ class TaskControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure();
+    }
+
+    public function testGetDetailInfo()
+    {
+        $response = $this->get(route('tasks.show', 1));
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([ 'id' => 1 ]);
     }
 }
