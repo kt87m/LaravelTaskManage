@@ -18,7 +18,13 @@ const Top: React.FC = () => {
   const tasks = data.map((task) => (
     <li key={task.id}>
       <input type="checkbox" checked={task.done} />
-      {task.title}
+      <Link
+        to={`/tasks/${task.id}`}
+        className="linkToDetail"
+        data-task-id={task.id}
+      >
+        {task.title}
+      </Link>
     </li>
   ));
 
