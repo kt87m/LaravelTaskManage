@@ -24,4 +24,16 @@ class TaskTest extends TestCase
         $task2 = Task::where('title', 'テストタスク2')->first();
         $this->assertFalse(boolval($task2->done));
     }
+
+    public function testGetSingleTask() 
+    {
+        $task = Task::find(1);
+        $this->assertEquals('テストタスク', $task->title);
+    }
+
+    public function testGetTaskNotExists()
+    {
+        $task = Task::find(0);
+        $this->assertNull($task);
+    }
 }

@@ -28,4 +28,11 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment([ 'id' => 1 ]);
     }
+
+    public function testGetTaskPathNotExists()
+    {
+        $response = $this->get(route('tasks.show', 0));
+
+        $response->assertStatus(404);
+    }
 }
