@@ -1,17 +1,10 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import useSWR, { responseInterface } from 'swr';
-
-type Task = {
-  id: number;
-  title: string;
-  done: boolean;
-};
-type TasksResponse = responseInterface<Task[], Error>;
+import useTask from '../hooks/useTask';
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { error, data }: TasksResponse = useSWR(`/api/tasks/${id}`);
+  const { error, data } = useTask(id);
 
   if (error) return <p>{error.message}</p>;
   if (data === undefined) return <p>loading...</p>;

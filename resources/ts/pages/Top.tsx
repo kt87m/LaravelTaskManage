@@ -1,16 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import useSWR, { responseInterface } from 'swr';
-
-type Task = {
-  id: number;
-  title: string;
-  done: boolean;
-};
-type TasksResponse = responseInterface<Task[], Error>;
+import useTask from '../hooks/useTask';
 
 const Top: React.FC = () => {
-  const { error, data }: TasksResponse = useSWR('/api/tasks');
+  const { error, data } = useTask();
 
   if (error) return <p>{error.message}</p>;
   if (data === undefined) return <p>loading...</p>;
