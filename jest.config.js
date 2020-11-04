@@ -1,4 +1,4 @@
 module.exports = {
-  testRegex: 'resources/ts/tests/.*.test.ts$',
+  testRegex: 'resources/ts/tests/.*\.(spec|test)\.tsx?$',
   preset: 'ts-jest'
 }
