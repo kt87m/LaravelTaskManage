@@ -4,10 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\Task;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class TaskTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * 全件取得、属性一致
      *
@@ -35,5 +38,22 @@ class TaskTest extends TestCase
     {
         $task = Task::find(0);
         $this->assertNull($task);
+    }
+
+    public function testUpdateTask()
+    {
+        $task = Task::create([
+            'title' => 'test',
+            'done' => false,
+        ]);
+
+        $this->assertEquals('test', $task->title);
+        $this->assertFalse($task->done);
+
+        $task->fill(['title' => 'テスト']);
+        $task->save();
+
+        $task2 = Task::find($task->id);
+        $this->assertEquals('テスト', $task2->title);
     }
 }
