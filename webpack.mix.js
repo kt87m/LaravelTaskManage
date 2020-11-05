@@ -14,7 +14,9 @@ const mix = require('laravel-mix');
 mix.ts('resources/ts/index.tsx', 'public/js')
   .postCss('resources/css/style.css', 'public/css', [
     require('tailwindcss'),
-  ]);
+  ])
+  .sourceMaps(false)
+  .version();
 
 mix.webpackConfig({
   devServer: {
