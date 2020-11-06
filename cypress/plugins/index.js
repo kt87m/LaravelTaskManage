@@ -20,4 +20,10 @@ module.exports = (on, config) => {
     // `config` is the resolved Cypress config
 
     on('task', require('./swap-env'));
+
+    on('after:screenshot', ({ path }) => {
+        renameSync(path, path.replace(/ \(\d*\)/i, ''));
+    });
+    
+    return config;
 };
