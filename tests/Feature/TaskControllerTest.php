@@ -38,8 +38,28 @@ class TaskControllerTest extends TestCase
 
     public function testPutTaskPath()
     {
-        $data = [];
+        $data = [
+            'title' => 'test title',
+        ];
+        $this->assertDatabaseMissing('tasks', $data);
+        
         $response = $this->put(route('tasks.update', 1), $data);
         $response->assertStatus(200);
+
+        $this->assertDatabaseHas('tasks', $data);
+    }
+
+    public function testPutTaskPath2()
+    {
+        $data = [
+            'title' => 'テストタスク2',
+            'done' => true,
+        ];
+        $this->assertDatabaseMissing('tasks', $data);
+        
+        $response = $this->put(route('tasks.update', 2), $data);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('tasks', $data);
     }
 }
