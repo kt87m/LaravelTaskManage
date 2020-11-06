@@ -15,8 +15,7 @@ mix.ts('resources/ts/index.tsx', 'public/js')
   .postCss('resources/css/style.css', 'public/css', [
     require('tailwindcss'),
   ])
-  .sourceMaps(false)
-  .version();
+  .sourceMaps(false);
 
 mix.webpackConfig({
   devServer: {
