@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+const { renameSync } = require('fs');
+
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
 //
