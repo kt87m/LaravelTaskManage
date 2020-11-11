@@ -2,12 +2,15 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TaskControllerTest extends TestCase
 {
+    use DatabaseMigrations;
+
     /**
      * 全件取得
      *
@@ -61,5 +64,18 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', $data);
+    }
+
+    public function testPutTaskPathNotExists()
+    {
+        $data = [
+            'title' => 'test title 2',
+        ];
+        $this->assertDatabaseMissing('tasks', $data);
+        
+        $response = $this->put(route('tasks.update', 0), $data);
+        $response->assertStatus(404);
+
+        $this->assertDatabaseMissing('tasks', $data);
     }
 }
