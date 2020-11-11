@@ -1,7 +1,14 @@
 /// <reference types="cypress" />
 
+function setupDb() {
+  cy.refreshDatabase()
+    .create('App\\Models\\Task', 1, { title: 'テストタスク', done: true })
+    .create('App\\Models\\Task', 1, { title: 'テストタスク2', done: false });
+}
+
 context('top page', () => {
   beforeEach(() => {
+    setupDb();
     cy.visit('/');
   });
 
@@ -19,6 +26,10 @@ context('top page', () => {
 });
 
 context('task detail page', () => {
+  beforeEach(() => {
+    setupDb();
+  });
+
   it('display specified task', () => {
     cy.visit('/tasks/1')
       .get('.taskTitle input')
@@ -30,6 +41,10 @@ context('task detail page', () => {
 });
 
 context('update task state globaly', () => {
+  beforeEach(() => {
+    setupDb();
+  });
+
   it('toggle task execution state', () => {
     cy.visit('/');
     cy.get('[data-task-id="1"] input[type="checkbox"]')
@@ -38,7 +53,10 @@ context('update task state globaly', () => {
       .should('be.checked');
 
     cy.visit('/tasks/1');
-    cy.get('input[type="checkbox"]').as('checkbox_detail').should('be.checked');
+    cy.wait(500) // wait task loading
+      .get('input[type="checkbox"]')
+      .as('checkbox_detail')
+      .should('be.checked');
     cy.get('@checkbox_detail').uncheck();
 
     cy.visit('/');
@@ -48,8 +66,10 @@ context('update task state globaly', () => {
   it('change task title', () => {
     cy.visit('/tasks/1');
     cy.get('.taskTitle input')
+      .clear()
       .type('タイトル変更')
-      .screenshot('task_title_typed');
+      .screenshot('task_title_typed')
+      .wait(500); // wait task updating
 
     cy.visit('/');
     cy.get('[data-task-id="1"]')
