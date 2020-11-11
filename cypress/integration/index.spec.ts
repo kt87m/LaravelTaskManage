@@ -35,16 +35,14 @@ context('update task state globaly', () => {
     cy.get('[data-task-id="1"] input[type="checkbox"]')
       .as('checkbox')
       .check()
-      .should('have.attr', 'checked');
+      .should('be.checked');
 
     cy.visit('/tasks/1');
-    cy.get('input[type="checkbox"]')
-      .as('checkbox_detail')
-      .should('have.attr', 'checked');
+    cy.get('input[type="checkbox"]').as('checkbox_detail').should('be.checked');
     cy.get('@checkbox_detail').uncheck();
 
     cy.visit('/');
-    cy.get('@checkbox').should('not.have.attr', 'checked');
+    cy.get('@checkbox').should('not.be.checked');
   });
 
   it('change task title', () => {
