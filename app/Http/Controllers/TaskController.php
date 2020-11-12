@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -14,7 +15,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return Task::all();
+        return Task::orderBy('id', 'asc')->get();
     }
 
     /**
@@ -48,7 +49,22 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        if ($task == null) {
+            abort(404);
+        }
+
+        $fillData = [];
+        if (isset($request->title)) {
+            $fillData['title'] = $request->title;
+        }
+        if (isset($request->done)) {
+            $fillData['done'] = $request->done;
+        }
+
+        if (count($fillData) > 0) {
+            $task->fill($fillData);
+            $task->save();
+        }
     }
 
     /**

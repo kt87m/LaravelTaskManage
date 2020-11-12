@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+const { renameSync } = require('fs');
+
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
 //
@@ -20,4 +23,10 @@ module.exports = (on, config) => {
     // `config` is the resolved Cypress config
 
     on('task', require('./swap-env'));
+
+    on('after:screenshot', ({ path }) => {
+        renameSync(path, path.replace(/ \(\d*\)/i, ''));
+    });
+    
+    return config;
 };
