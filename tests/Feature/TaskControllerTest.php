@@ -88,4 +88,17 @@ class TaskControllerTest extends TestCase
 
         $this->assertDatabaseMissing('tasks', $data);
     }
+
+    public function testCreateTask()
+    {
+        $data = [
+            'title' => 'test title',
+        ];
+        $this->assertDatabaseMissing('tasks', $data);
+        
+        $response = $this->post(route('tasks.store'), $data);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('tasks', $data);
+    }
 }
