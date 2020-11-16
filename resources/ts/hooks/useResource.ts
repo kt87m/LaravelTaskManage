@@ -45,7 +45,14 @@ class RESTResourceAccess<T extends keyof Resources> {
     return new RESTResource(this.type, id, response);
   }
 
-  // create(data: T): Resource<T>
+  create(data: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+    axios
+      .post(this.uri, data)
+      .then(() => mutate(this.uri))
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 
   update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>): void {
     const uri = `${this.uri}/${id}`;

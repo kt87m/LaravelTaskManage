@@ -77,3 +77,20 @@ context('update task state globaly', () => {
       .screenshot('task_title_changed_in_top_page');
   });
 });
+
+context('create new task', () => {
+  beforeEach(() => {
+    setupDb();
+    cy.visit('/');
+  });
+
+  it('create new task with initial title "名称未設定タスク"', () => {
+    cy.get('.createTask').click();
+    cy.wait(1000) // wait task creating
+      .get('li')
+      .should(($li) => {
+        expect($li).to.have.length(3);
+        expect($li).contain('名称未設定タスク');
+      });
+  });
+});
