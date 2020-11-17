@@ -111,24 +111,6 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks', $data);
     }
 
-    public function testCreateTaskWithoutTitle_failed()
-    {
-        $data = [];
-        $response = $this->from(route('tasks.index'))
-            ->post(route('tasks.store'), $data);
-
-        $response->assertSessionHasErrors(['title' => 'The title field is required.']);
-    }
-
-    public function testCreateTaskWithEmptyTitle_failed()
-    {
-        $data = ['title' => ''];
-        $response = $this->from(route('tasks.index'))
-            ->post(route('tasks.store'), $data);
-
-        $response->assertSessionHasErrors(['title' => 'The title field is required.']);
-    }
-
     public function testCreateTaskTitleMaxLength()
     {
         $data = [
