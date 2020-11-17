@@ -111,24 +111,6 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks', $data);
     }
 
-    public function testCreateTaskWithoutTitle_failed()
-    {
-        $data = [];
-        $response = $this->from(route('tasks.index'))
-            ->post(route('tasks.store'), $data);
-
-        $response->assertSessionHasErrors(['title' => 'The title field is required.']);
-    }
-
-    public function testCreateTaskWithEmptyTitle_failed()
-    {
-        $data = ['title' => ''];
-        $response = $this->from(route('tasks.index'))
-            ->post(route('tasks.store'), $data);
-
-        $response->assertSessionHasErrors(['title' => 'The title field is required.']);
-    }
-
     public function testCreateTaskTitleMaxLength()
     {
         $data = [
@@ -152,5 +134,15 @@ class TaskControllerTest extends TestCase
         $response = $this->post(route('tasks.store', $data));
 
         $response->assertSessionHasErrors(['title' => 'The title may not be greater than 512 characters.']);
+    }
+
+    public function testDeleteTask()
+    {
+        $this->assertDatabaseHas('tasks', $this->task->toArray());
+        
+        $response = $this->delete(route('tasks.destroy', $this->task->id));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('tasks', $this->task->toArray());
     }
 }

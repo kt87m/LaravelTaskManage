@@ -82,6 +82,6 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        Task::destroy($task->id);
     }
 }

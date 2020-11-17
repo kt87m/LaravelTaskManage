@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { useResource } from '../hooks/useResource';
 
@@ -7,6 +7,7 @@ let inputTimer: number | undefined;
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const history = useHistory();
 
   const task = useResource('tasks').get(id);
 
@@ -25,13 +26,20 @@ const TaskDetail: React.FC = () => {
     task.update({ done: e.target.checked });
   };
 
+  const onClickDeleteTask = () => {
+    if (!task.data) return;
+    void task.deleteSelf().then(() => {
+      history.push('/');
+    });
+  };
+
   if (task.error) return <p>{task.error.message}</p>;
   if (!task.data) return <p>loading...</p>;
 
   return (
     <div>
       <div className="flex items-center">
-        <h1 className="taskTitle order-1">
+        <h1 className="taskTitle">
           <input
             defaultValue={task.data.title}
             onChange={onTitleChange}
@@ -42,8 +50,15 @@ const TaskDetail: React.FC = () => {
           type="checkbox"
           checked={task.data.done}
           onChange={onToggleCheck}
-          className="mr-2"
+          className="mr-2 order-first"
         />
+        <button
+          type="button"
+          onClick={onClickDeleteTask}
+          className="deleteTask ml-5 p-1 corner-round-5 bg-red-500 text-white"
+        >
+          削除
+        </button>
       </div>
     </div>
   );

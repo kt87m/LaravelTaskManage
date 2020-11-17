@@ -64,7 +64,15 @@ class RESTResourceAccess<T extends keyof Resources> {
       });
   }
 
-  // delete(id: Id): void
+  delete(id: Id) {
+    const uri = `${this.uri}/${id}`;
+    return axios
+      .delete(uri)
+      .then(() => mutate(this.uri))
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 }
 
 class RESTResource<T extends keyof Resources> {
@@ -93,6 +101,8 @@ class RESTResource<T extends keyof Resources> {
   }
 
   deleteSelf() {
-    return;
+    return axios.delete(this.uri).catch((e) => {
+      console.log(e);
+    });
   }
 }

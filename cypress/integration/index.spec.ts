@@ -84,7 +84,7 @@ context('create new task', () => {
     cy.visit('/');
   });
 
-  it('create new task with initial title "名称未設定タスク"', () => {
+  it('create new task with title placeholder "名称未設定タスク"', () => {
     cy.get('.createTask').click();
     cy.wait(1000) // wait task creating
       .get('li')
@@ -92,5 +92,23 @@ context('create new task', () => {
         expect($li).to.have.length(3);
         expect($li).contain('名称未設定タスク');
       });
+  });
+});
+
+context('delete task', () => {
+  beforeEach(() => {
+    setupDb();
+    cy.visit('/tasks/1');
+  });
+
+  it('delete specified task', () => {
+    cy.get('.deleteTask').click();
+    cy.wait(1000) // wait task deleting
+      .location('pathname')
+      .should('eq', '/');
+    cy.get('li').should(($li) => {
+      expect($li).to.have.length(1);
+      expect($li).contain('テストタスク2');
+    });
   });
 });
