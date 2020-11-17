@@ -153,4 +153,14 @@ class TaskControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['title' => 'The title may not be greater than 512 characters.']);
     }
+
+    public function testDeleteTask()
+    {
+        $this->assertDatabaseHas('tasks', $this->task->toArray());
+        
+        $response = $this->delete(route('tasks.destroy', $this->task->id));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('tasks', $this->task->toArray());
+    }
 }
