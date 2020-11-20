@@ -15,12 +15,11 @@ mix.ts('resources/ts/index.tsx', 'public/js')
   .postCss('resources/css/style.css', 'public/css', [
     require('tailwindcss'),
   ])
-  .sourceMaps(false);
-
-mix.webpackConfig({
-  devServer: {
+  .webpackConfig({
+    devtool: 'inline-source-map',
+    devServer: {
       proxy: {
-          '*': 'http://localhost:8000'
+        '*': 'http://localhost:8000'
       }
-  }
-});
+    },
+  });
