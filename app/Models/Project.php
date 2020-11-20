@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use GoldSpecDigital\LaravelEloquentUUID\Database\Eloquent\Model;
 
-class Task extends Model
+class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'done', 'project_id'];
+    protected $fillable = ['name'];
 }
