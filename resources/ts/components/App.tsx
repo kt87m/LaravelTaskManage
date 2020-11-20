@@ -7,14 +7,16 @@ import Top from '../pages/Top';
 const App: React.FC = () => {
   return (
     <Router>
-      <Switch>
-        <Route path="/tasks/:id">
-          <TaskDetail />
-        </Route>
-        <Route path="/">
-          <Top />
-        </Route>
-      </Switch>
+      <div className="container mx-auto p-10">
+        <Switch>
+          <Route path="/tasks/:id">
+            <TaskDetail />
+          </Route>
+          <Route path="/">
+            <Top />
+          </Route>
+        </Switch>
+      </div>
     </Router>
   );
 };
