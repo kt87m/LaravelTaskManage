@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Project;
 use App\Models\Task;
+use Illuminate\Support\Facades\Request;
 
 class TaskObserver
 {
@@ -15,6 +16,18 @@ class TaskObserver
      */
     public function creating(Task $task)
     {
+        $project_id = Request::input('project_id');
+        $project = $project_id && Project::find($project_id);
+
+        if (!$project) {
+            $project = Project::create([
+                'name' => '',
+                'expiration' => date( 'Y-m-d H:i:s', strtotime('+1 hour') ),
+            ]);
+            $task->project_id = $project->id;
+        } else {
+            $task->project_id = $project_id;
+        }
     }
 
     /**

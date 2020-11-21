@@ -27,9 +27,7 @@ class TaskControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->project = Project::factory()->create();
         $this->task = Task::create([
-            'project_id' => $this->project->id,
             'title' => 'テストタスク',
             'done' => false,
         ]);
@@ -106,7 +104,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTask()
     {
         $data = [
-            'project_id' => $this->project->id,
+            'project_id' => $this->task->project_id,
             'title' => 'test title',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -120,7 +118,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTaskTitleMaxLength()
     {
         $data = [
-            'project_id' => $this->project->id,
+            'project_id' => $this->task->project_id,
             'title' => str_random(512),
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -134,6 +132,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTaskTitleMaxLengthPlus1_failed()
     {
         $data = [
+            'project_id' => $this->task->project_id,
             'title' => str_random(513),
         ];
         $this->assertDatabaseMissing('tasks', $data);

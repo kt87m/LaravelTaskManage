@@ -13,13 +13,6 @@ class TaskTest extends TestCase
 
     const UUID_NOT_EXISTS = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->project = Project::factory()->create();
-    }
-
     public function testGetTaskNotExists()
     {
         $task = Task::find(self::UUID_NOT_EXISTS);
@@ -29,7 +22,6 @@ class TaskTest extends TestCase
     public function testUpdateTask()
     {
         $task = Task::create([
-            'project_id' => $this->project->id,
             'title' => 'test',
             'done' => false,
         ]);
