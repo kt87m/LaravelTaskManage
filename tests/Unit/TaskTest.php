@@ -12,7 +12,7 @@ class TaskTest extends TestCase
 
     public function testGetTaskNotExists()
     {
-        $task = Task::find(0);
+        $task = Task::find('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
         $this->assertNull($task);
     }
 

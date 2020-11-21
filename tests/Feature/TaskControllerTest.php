@@ -53,7 +53,7 @@ class TaskControllerTest extends TestCase
 
     public function testGetTaskPathNotExists()
     {
-        $response = $this->get(route('tasks.show', 0));
+        $response = $this->get(route('tasks.show', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'));
 
         $response->assertStatus(404);
     }
@@ -92,7 +92,7 @@ class TaskControllerTest extends TestCase
         ];
         $this->assertDatabaseMissing('tasks', $data);
         
-        $response = $this->put(route('tasks.update', 0), $data);
+        $response = $this->put(route('tasks.update', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'), $data);
         $response->assertStatus(404);
 
         $this->assertDatabaseMissing('tasks', $data);
