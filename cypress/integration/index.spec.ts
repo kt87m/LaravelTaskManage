@@ -1,9 +1,18 @@
 /// <reference types="cypress" />
 
+let tasks: { id: string }[];
 function setupDb() {
   cy.refreshDatabase()
     .create('App\\Models\\Task', 1, { title: 'テストタスク', done: true })
     .create('App\\Models\\Task', 1, { title: 'テストタスク2', done: false });
+
+  cy.php(
+    `
+    App\\Models\\Task::all();
+  `
+  ).then((ts) => {
+    tasks = ts;
+  });
 }
 
 context('top page', () => {
@@ -20,8 +29,8 @@ context('top page', () => {
   });
 
   it('can transition to task detail', () => {
-    cy.get('[data-task-id="1"] .linkToDetail').click();
-    cy.url().should('include', '/tasks/1');
+    cy.get(`[data-task-id="${tasks[0].id}"] .linkToDetail`).click();
+    cy.url().should('include', `/tasks/${tasks[0].id}`);
   });
 });
 
@@ -31,10 +40,10 @@ context('task detail page', () => {
   });
 
   it('display specified task', () => {
-    cy.visit('/tasks/1')
+    cy.visit(`/tasks/${tasks[0].id}`)
       .get('.taskTitle input')
       .should('has.value', 'テストタスク');
-    cy.visit('/tasks/2')
+    cy.visit(`/tasks/${tasks[1].id}`)
       .get('.taskTitle input')
       .should('has.value', 'テストタスク2');
   });
@@ -47,12 +56,12 @@ context('update task state globaly', () => {
 
   it('toggle task execution state', () => {
     cy.visit('/');
-    cy.get('[data-task-id="1"] input[type="checkbox"]')
+    cy.get(`[data-task-id="${tasks[0].id}"] input[type="checkbox"]`)
       .as('checkbox')
       .check()
       .should('be.checked');
 
-    cy.visit('/tasks/1');
+    cy.visit(`/tasks/${tasks[0].id}`);
     cy.wait(500) // wait task loading
       .get('input[type="checkbox"]')
       .as('checkbox_detail')
@@ -64,7 +73,7 @@ context('update task state globaly', () => {
   });
 
   it('change task title', () => {
-    cy.visit('/tasks/1');
+    cy.visit(`/tasks/${tasks[0].id}`);
     cy.get('.taskTitle input')
       .clear()
       .type('タイトル変更')
@@ -72,7 +81,7 @@ context('update task state globaly', () => {
       .wait(500); // wait task updating
 
     cy.visit('/');
-    cy.get('[data-task-id="1"]')
+    cy.get(`[data-task-id="${tasks[0].id}"]`)
       .contains('タイトル変更')
       .screenshot('task_title_changed_in_top_page');
   });
@@ -98,10 +107,10 @@ context('create new task', () => {
 context('delete task', () => {
   beforeEach(() => {
     setupDb();
-    cy.visit('/tasks/1');
   });
 
   it('delete specified task', () => {
+    cy.visit(`/tasks/${tasks[0].id}`);
     cy.get('.deleteTask').click();
     cy.wait(1000) // wait task deleting
       .location('pathname')
