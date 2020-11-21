@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,8 +30,17 @@ class TaskController extends Controller
         $validatedData = $request->validate([
             'title' => 'max:512',
         ]);
+
+        $project = Project::find( $request->project_id );
+        if (!$project) {
+            $project = Project::create([
+                'name' => '',
+                'expiration' => date( 'Y-m-d H:i:s', strtotime('+1 hour') ),
+            ]);
+        }
         
         Task::create([
+            'project_id' => $project->id,
             'title' => $request->title ?? '',
             'done' => false,
         ]);

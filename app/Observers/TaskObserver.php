@@ -15,13 +15,6 @@ class TaskObserver
      */
     public function creating(Task $task)
     {
-        if (!$task->project_id) {
-            $project = Project::create([
-                'name' => '',
-                'expiration' => date( 'Y-m-d H:i:s', strtotime('+1 hour') ),
-            ]);
-            $task->project_id = $project->id;
-        }
     }
 
     /**

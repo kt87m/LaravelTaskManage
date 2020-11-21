@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -20,11 +21,15 @@ class TaskControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    const UUID_NOT_EXISTS = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->project = Project::factory()->create();
         $this->task = Task::create([
+            'project_id' => $this->project->id,
             'title' => 'テストタスク',
             'done' => false,
         ]);
@@ -53,7 +58,7 @@ class TaskControllerTest extends TestCase
 
     public function testGetTaskPathNotExists()
     {
-        $response = $this->get(route('tasks.show', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'));
+        $response = $this->get(route('tasks.show', self::UUID_NOT_EXISTS));
 
         $response->assertStatus(404);
     }
@@ -92,7 +97,7 @@ class TaskControllerTest extends TestCase
         ];
         $this->assertDatabaseMissing('tasks', $data);
         
-        $response = $this->put(route('tasks.update', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'), $data);
+        $response = $this->put(route('tasks.update', self::UUID_NOT_EXISTS), $data);
         $response->assertStatus(404);
 
         $this->assertDatabaseMissing('tasks', $data);
@@ -101,6 +106,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTask()
     {
         $data = [
+            'project_id' => $this->project->id,
             'title' => 'test title',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -114,6 +120,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTaskTitleMaxLength()
     {
         $data = [
+            'project_id' => $this->project->id,
             'title' => str_random(512),
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -144,5 +151,27 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
 
         $this->assertDatabaseMissing('tasks', $this->task->toArray());
+    }
+
+    public function testProjectCreatedWhenAddTaskWithoutValidProjectId()
+    {
+        $this->assertDatabaseCount('projects', 1);
+
+        // without project id
+        $data = [
+            'title' => 'test title',
+        ];
+        $response = $this->post(route('tasks.store'), $data);
+        $response->assertStatus(200);
+        $this->assertDatabaseCount('projects', 2);
+
+        // with project id not exists
+        $data = [
+            'project_id' => self::UUID_NOT_EXISTS,
+            'title' => 'test title',
+        ];
+        $response = $this->post(route('tasks.store'), $data);
+        $response->assertStatus(200);
+        $this->assertDatabaseCount('projects', 3);
     }
 }
