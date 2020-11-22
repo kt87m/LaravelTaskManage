@@ -1,16 +1,14 @@
 /// <reference types="cypress" />
 
-let tasks: { id: string }[];
+import { Resources } from '../../resources/ts/hooks/useResource';
+
+let tasks: Resources['tasks'][];
 function setupDb() {
   cy.refreshDatabase()
     .create('App\\Models\\Task', 1, { title: 'テストタスク', done: true })
     .create('App\\Models\\Task', 1, { title: 'テストタスク2', done: false });
 
-  cy.php(
-    `
-    App\\Models\\Task::all();
-  `
-  ).then((ts) => {
+  cy.php<typeof tasks>(`App\\Models\\Task::all();`).then((ts) => {
     tasks = ts;
   });
 }

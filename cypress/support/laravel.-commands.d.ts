@@ -16,6 +16,6 @@ declare namespace Cypress {
       attributes: { [p: string]: string | number | boolean }
     ): this;
 
-    php(command: string): this;
+    php<T = undefined>(command: string): Cypress.Chainable<T>;
   }
 }
