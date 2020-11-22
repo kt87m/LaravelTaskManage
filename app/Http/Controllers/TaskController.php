@@ -30,8 +30,8 @@ class TaskController extends Controller
         $validatedData = $request->validate([
             'title' => 'max:512',
         ]);
-        
-        Task::create([
+
+        return Task::create([
             'title' => $request->title ?? '',
             'done' => false,
         ]);

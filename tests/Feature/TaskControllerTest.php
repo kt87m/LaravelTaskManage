@@ -110,7 +110,7 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseMissing('tasks', $data);
         
         $response = $this->post(route('tasks.store'), $data);
-        $response->assertStatus(200);
+        $response->assertStatus(201);
 
         $this->assertDatabaseHas('tasks', $data);
     }
@@ -125,7 +125,7 @@ class TaskControllerTest extends TestCase
 
         $response = $this->post(route('tasks.store', $data));
 
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $this->assertDatabaseHas('tasks', $data);
     }
 
@@ -161,7 +161,7 @@ class TaskControllerTest extends TestCase
             'title' => 'test title',
         ];
         $response = $this->post(route('tasks.store'), $data);
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $this->assertDatabaseCount('projects', 2);
 
         // with project id not exists
@@ -170,7 +170,7 @@ class TaskControllerTest extends TestCase
             'title' => 'test title',
         ];
         $response = $this->post(route('tasks.store'), $data);
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $this->assertDatabaseCount('projects', 3);
     }
 }
