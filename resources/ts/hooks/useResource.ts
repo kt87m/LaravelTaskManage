@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import useSWR, { responseInterface, mutate } from 'swr';
 
 export function useResource<T extends keyof Resources>(
@@ -16,6 +16,7 @@ type ResourceBase = {
 };
 
 type Task = ResourceBase & {
+  project_id: string;
   title: string;
   done: boolean;
 };
@@ -46,11 +47,14 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   create(data: Partial<Omit<Resources[T], keyof ResourceBase>>) {
-    axios
-      .post(this.uri, data)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
+    return axios
+      .post<Resources[T], AxiosResponse<Resources[T]>>(
+        this.uri + location.search,
+        data
+      )
+      .then((res) => {
+        void mutate(this.uri);
+        return res;
       });
   }
 

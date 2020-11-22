@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useResource } from '../hooks/useResource';
 
 const Top: React.FC = () => {
+  const history = useHistory();
+
   const taskAccess = useResource('tasks');
   const tasks = taskAccess.index();
 
@@ -14,9 +16,16 @@ const Top: React.FC = () => {
   };
 
   const onClickAddButton = () => {
-    taskAccess.create({
-      done: false,
-    });
+    taskAccess
+      .create({
+        done: false,
+      })
+      .then((res) => {
+        history.replace(
+          `${location.pathname}?project_id=${res.data.project_id}`
+        );
+      })
+      .catch(console.log);
   };
 
   if (tasks.error) return <p>{tasks.error.message}</p>;
@@ -24,7 +33,10 @@ const Top: React.FC = () => {
 
   const taskItems = tasks.data.map((task) => (
     <li key={task.id} data-task-id={task.id} className="flex items-center">
-      <Link to={`/tasks/${task.id}`} className="linkToDetail order-1">
+      <Link
+        to={{ pathname: `/tasks/${task.id}`, search: location.search }}
+        className="linkToDetail order-1"
+      >
         {task.title || <span className="text-gray-500">名称未設定タスク</span>}
       </Link>
       <input
