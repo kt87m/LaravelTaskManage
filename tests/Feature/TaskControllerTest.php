@@ -34,16 +34,48 @@ class TaskControllerTest extends TestCase
     }
 
     /**
-     * 全件取得
+     * プロジェクト内全件取得
      *
      * @return void
      */
-    public function testGetAllTasks()
+    public function testGetAllTasksOfSpecifiedProject()
     {
+        // project_id無しなら空配列を返す
         $response = $this->get(route('tasks.index'));
-
         $response->assertStatus(200)
-            ->assertJsonStructure();
+            ->assertJson([]);
+
+        // セットアップ済みのproject_idでGET
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment($this->task->toArray());
+    }
+
+    /**
+     * 該当するプロジェクトのタスクのみを返す
+     *
+     * @return void
+     */
+    public function testGetTasksOfOnlySpecifiedProject()
+    {
+        // 新規プロジェクト/タスク追加
+        $newTask = Task::create([
+            'title' => 'テストタスク2',
+            'done' => true,
+        ]);
+
+        // セットアップ済みのプロジェクト/タスク取得
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment($this->task->toArray());
+
+        // 新規作成したプロジェクト/タスク取得
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $newTask->project_id]);
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment($newTask->toArray());
     }
 
     public function testGetDetailInfo()

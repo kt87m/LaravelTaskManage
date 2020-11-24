@@ -14,9 +14,12 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Task::orderBy('id', 'asc')->get();
+        $project_id = $request->input('project_id');
+        if (!$project_id) return [];
+
+        return Task::where('project_id', $project_id)->orderBy('created_at', 'asc')->get();
     }
 
     /**
