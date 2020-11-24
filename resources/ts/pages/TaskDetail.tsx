@@ -7,7 +7,7 @@ let inputTimer: number | undefined;
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const history = useHistory();
+  const history = useHistory<{ fromTop?: boolean }>();
 
   const task = useResource('tasks').get(id);
 
@@ -29,7 +29,8 @@ const TaskDetail: React.FC = () => {
   const onClickDeleteTask = () => {
     if (!task.data) return;
     void task.deleteSelf().then(() => {
-      history.push('/');
+      if (history.location.state.fromTop) history.goBack();
+      else history.replace(`/${location.search}`);
     });
   };
 
