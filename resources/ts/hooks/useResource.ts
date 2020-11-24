@@ -37,7 +37,16 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   index() {
-    const { error, data } = useSWR<Array<Resources[T]>, Error>(this.uri);
+    const { error, data } = useSWR<Array<Resources[T]>, Error>(
+      this.uri,
+      (uri) => {
+        return axios
+          .get<Resources[T][], AxiosResponse<Resources[T][]>>(
+            `${uri as string}${location.search}`
+          )
+          .then((res) => res.data);
+      }
+    );
     return { error, data };
   }
 
@@ -46,13 +55,17 @@ class RESTResourceAccess<T extends keyof Resources> {
     return new RESTResource(this.type, id, response);
   }
 
-  create(data: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+  create(
+    data: Partial<Omit<Resources[T], keyof ResourceBase>>,
+    onSuccess?: (res: Resources[T]) => void
+  ) {
     return axios
       .post<Resources[T], AxiosResponse<Resources[T]>>(
         this.uri + location.search,
         data
       )
       .then((res) => {
+        if (onSuccess) onSuccess(res.data);
         void mutate(this.uri);
         return res;
       });

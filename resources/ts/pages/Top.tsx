@@ -17,14 +17,11 @@ const Top: React.FC = () => {
 
   const onClickAddButton = () => {
     taskAccess
-      .create({
-        done: false,
-      })
-      .then((res) => {
+      .create({ done: false }, (createdTask) =>
         history.replace(
-          `${location.pathname}?project_id=${res.data.project_id}`
-        );
-      })
+          `${location.pathname}?project_id=${createdTask.project_id}`
+        )
+      )
       .catch(console.log);
   };
 
@@ -34,7 +31,11 @@ const Top: React.FC = () => {
   const taskItems = tasks.data.map((task) => (
     <li key={task.id} data-task-id={task.id} className="flex items-center">
       <Link
-        to={{ pathname: `/tasks/${task.id}`, search: location.search }}
+        to={{
+          pathname: `/tasks/${task.id}`,
+          search: location.search,
+          state: { fromTop: true },
+        }}
         className="linkToDetail order-1"
       >
         {task.title || <span className="text-gray-500">名称未設定タスク</span>}
