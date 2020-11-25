@@ -11,8 +11,10 @@ const TaskDetail: React.FC = () => {
 
   const task = useResource('tasks').get(id);
 
+  if (task.error) return <p>{task.error.message}</p>;
+  if (!task.data) return <p>loading...</p>;
+
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!task.data) return;
     const title = e.target.value;
     if (inputTimer) clearTimeout(inputTimer);
     inputTimer = window.setTimeout(() => {
@@ -22,20 +24,15 @@ const TaskDetail: React.FC = () => {
   };
 
   const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!task.data) return;
     task.update({ done: e.target.checked });
   };
 
   const onClickDeleteTask = () => {
-    if (!task.data) return;
     void task.deleteSelf().then(() => {
       if (history.location.state?.fromTop) history.goBack();
       else history.replace(`/${location.search}`);
     });
   };
-
-  if (task.error) return <p>{task.error.message}</p>;
-  if (!task.data) return <p>loading...</p>;
 
   return (
     <div>
