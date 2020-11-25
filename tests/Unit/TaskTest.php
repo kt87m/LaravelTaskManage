@@ -11,11 +11,11 @@ class TaskTest extends TestCase
 {
     use RefreshDatabase;
 
-    const UUID_NOT_EXISTS = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    const ID_NOT_EXISTS = 0;
 
     public function testGetTaskNotExists()
     {
-        $task = Task::find(self::UUID_NOT_EXISTS);
+        $task = Task::find(self::ID_NOT_EXISTS);
         $this->assertNull($task);
     }
 

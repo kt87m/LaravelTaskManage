@@ -80,7 +80,7 @@ class TaskControllerTest extends TestCase
 
     public function testGetDetailInfo()
     {
-        $response = $this->get(route('tasks.show', $this->task->id));
+        $response = $this->call('GET', route('tasks.show', $this->task->id), ['project_id' => $this->task->project_id]);
 
         $response->assertStatus(200)
             ->assertJsonFragment([ 'id' => $this->task->id ]);
@@ -88,7 +88,7 @@ class TaskControllerTest extends TestCase
 
     public function testGetTaskPathNotExists()
     {
-        $response = $this->get(route('tasks.show', self::UUID_NOT_EXISTS));
+        $response = $this->get(route('tasks.show', 0));
 
         $response->assertStatus(404);
     }
@@ -127,7 +127,7 @@ class TaskControllerTest extends TestCase
         ];
         $this->assertDatabaseMissing('tasks', $data);
         
-        $response = $this->put(route('tasks.update', self::UUID_NOT_EXISTS), $data);
+        $response = $this->put(route('tasks.update', 0), $data);
         $response->assertStatus(404);
 
         $this->assertDatabaseMissing('tasks', $data);
