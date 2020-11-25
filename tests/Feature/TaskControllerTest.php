@@ -78,7 +78,12 @@ class TaskControllerTest extends TestCase
             ->assertJsonFragment($newTask->toArray());
     }
 
-    public function testGetDetailInfo()
+    /**
+     * タスク詳細
+     *
+     * @return void
+     */
+    public function testGetTaskDetail()
     {
         $response = $this->call('GET', route('tasks.show', $this->task->id), ['project_id' => $this->task->project_id]);
 
@@ -86,9 +91,26 @@ class TaskControllerTest extends TestCase
             ->assertJsonFragment([ 'id' => $this->task->id ]);
     }
 
+    /**
+     * プロジェクトIDなしでタスク詳細にアクセス
+     *
+     * @return void
+     */
+    public function testGetTaskDetailWithoutProjectId()
+    {
+        $response = $this->call('GET', route('tasks.show', $this->task->id));
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * 存在しないタスク詳細にアクセス
+     *
+     * @return void
+     */
     public function testGetTaskPathNotExists()
     {
-        $response = $this->get(route('tasks.show', 0));
+        $response = $this->call('GET', route('tasks.show', 0), ['project_id' => $this->task->project_id]);
 
         $response->assertStatus(404);
     }

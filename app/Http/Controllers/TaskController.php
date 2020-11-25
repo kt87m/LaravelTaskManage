@@ -43,11 +43,16 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function show(Request $request, Task $task)
     {
+        $project_id = $request->input('project_id');
+        if ($project_id !== $task->project_id)
+            return response([], 404);
+
         return $task;
     }
 
