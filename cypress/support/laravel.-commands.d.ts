@@ -4,6 +4,8 @@ declare namespace Cypress {
   interface Chainable {
     refreshDatabase(options?: { [p: string]: string | number | boolean }): this;
 
+    seed(className?: string): this;
+
     create(model: string, times = null, attributes = {}): this;
     create(model: string, times: number): this;
     create(
