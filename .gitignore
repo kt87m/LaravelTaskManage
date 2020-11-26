@@ -16,3 +16,5 @@ yarn-error.log
 public/mix-manifest.json
 cypress/integration/examples
 cypress/screenshots
+cypress/videos
+cypress/fixtures
