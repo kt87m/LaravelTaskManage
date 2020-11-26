@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { responseInterface, mutate } from 'swr';
 
 export function useResource<T extends keyof Resources>(
@@ -51,7 +51,14 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   get(id: Id) {
-    const response = useSWR<Resources[T], Error>(`${this.uri}/${id}`);
+    const response = useSWR<Resources[T], AxiosError<Error>>(
+      `${this.uri}/${id}${location.search}`,
+      (uri) => {
+        return axios
+          .get<Resources[T], AxiosResponse<Resources[T]>>(uri as string)
+          .then((res) => res.data);
+      }
+    );
     return new RESTResource(this.type, id, response);
   }
 
@@ -94,13 +101,13 @@ class RESTResourceAccess<T extends keyof Resources> {
 
 class RESTResource<T extends keyof Resources> {
   private uri: string;
-  public readonly error?: Error;
+  public readonly error?: AxiosError<Error>;
   public readonly data?: Resources[T];
 
   constructor(
     public readonly type: T,
     public readonly id: Id,
-    response: responseInterface<Resources[T], Error>
+    response: responseInterface<Resources[T], AxiosError<Error>>
   ) {
     this.uri = `/api/${type}/${id}`;
     this.error = response.error;

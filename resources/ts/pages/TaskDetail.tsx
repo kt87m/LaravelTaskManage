@@ -11,7 +11,7 @@ const TaskDetail: React.FC = () => {
 
   const task = useResource('tasks').get(id);
 
-  if (task.error) return <p>{task.error.message}</p>;
+  if (task.error) return <p>{task.error.response?.data.message}</p>;
   if (!task.data) return <p>loading...</p>;
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
