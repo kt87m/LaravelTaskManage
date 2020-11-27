@@ -72,7 +72,7 @@ context('update task state globaly', () => {
       .get('input[type="checkbox"]')
       .as('checkbox_detail')
       .should('be.checked');
-    cy.get('@checkbox_detail').uncheck();
+    cy.get('@checkbox_detail').uncheck().should('not.be.checked');
 
     cy.visit(`/${queryString}`);
     cy.get('@checkbox').should('not.be.checked');
