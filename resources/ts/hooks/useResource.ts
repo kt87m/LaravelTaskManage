@@ -30,7 +30,7 @@ export type Resources = {
 };
 
 class RESTResourceAccess<T extends keyof Resources> {
-  private uri: string;
+  public readonly uri: string;
 
   constructor(private type: T) {
     this.uri = `/api/${this.type}`;
@@ -50,16 +50,18 @@ class RESTResourceAccess<T extends keyof Resources> {
     return { error, data };
   }
 
-  get(id: Id) {
+  get(id: Id): RESTResource<T> {
     const response = useSWR<Resources[T], AxiosError<Error>>(
-      `${this.uri}/${id}${location.search}`,
+      `${this.uri}/${id}`,
       (uri) => {
         return axios
-          .get<Resources[T], AxiosResponse<Resources[T]>>(uri as string)
+          .get<Resources[T], AxiosResponse<Resources[T]>>(
+            `${uri as string}${location.search}`
+          )
           .then((res) => res.data);
       }
     );
-    return new RESTResource(this.type, id, response);
+    return new RESTResource(this, id, response);
   }
 
   create(
@@ -78,24 +80,48 @@ class RESTResourceAccess<T extends keyof Resources> {
       });
   }
 
-  update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>): void {
+  update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+    // 集合キャッシュ
+    void mutate(
+      this.uri,
+      (data?: Resources[T][]) => {
+        if (!data) return;
+        return data.map((item) =>
+          item.id == id ? { ...item, ...diff } : item
+        );
+      },
+      false
+    );
+
+    // 個別キャッシュ
     const uri = `${this.uri}/${id}`;
-    axios
-      .put(uri, diff)
-      .then(() => mutate(this.uri))
+    void mutate(uri, (data: Resources[T]) => ({ ...data, ...diff }), false);
+
+    return axios
+      .put<Resources[T]>(uri, diff)
+      .then((res) => mutate(uri, res.data, false))
       .catch((e) => {
         console.log(e);
+        void mutate(this.uri);
+        void mutate(uri);
       });
   }
 
   delete(id: Id) {
+    void mutate(
+      this.uri,
+      (data?: Resources[T][]) => {
+        if (!data) return;
+        return data.filter((item) => item.id != id);
+      },
+      false
+    );
+
     const uri = `${this.uri}/${id}`;
-    return axios
-      .delete(uri)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
-      });
+    return axios.delete(uri).catch((e) => {
+      console.log(e);
+      void mutate(this.uri);
+    });
   }
 }
 
@@ -105,28 +131,20 @@ class RESTResource<T extends keyof Resources> {
   public readonly data?: Resources[T];
 
   constructor(
-    public readonly type: T,
+    public readonly parent: RESTResourceAccess<T>,
     public readonly id: Id,
     response: responseInterface<Resources[T], AxiosError<Error>>
   ) {
-    this.uri = `/api/${type}/${id}`;
+    this.uri = `${parent.uri}/${id}`;
     this.error = response.error;
     this.data = response.data;
   }
 
-  update(data: Partial<Resources[T]>): void {
-    void mutate(this.uri, { ...this.data, data }, false);
-    axios
-      .put(this.uri, data)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
-      });
+  update(diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+    return this.parent.update(this.id, diff);
   }
 
   deleteSelf() {
-    return axios.delete(this.uri).catch((e) => {
-      console.log(e);
-    });
+    return this.parent.delete(this.id);
   }
 }
