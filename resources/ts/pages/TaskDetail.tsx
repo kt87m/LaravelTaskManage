@@ -19,12 +19,12 @@ const TaskDetail: React.FC = () => {
     if (inputTimer) clearTimeout(inputTimer);
     inputTimer = window.setTimeout(() => {
       inputTimer = undefined;
-      task.update({ title });
+      void task.update({ title });
     }, 1000);
   };
 
   const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    task.update({ done: e.target.checked });
+    void task.update({ done: e.target.checked });
   };
 
   const onClickDeleteTask = () => {

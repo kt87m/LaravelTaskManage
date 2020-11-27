@@ -85,6 +85,8 @@ class TaskController extends Controller
             $task->fill($fillData);
             $task->save();
         }
+
+        return $task;
     }
 
     /**

@@ -12,7 +12,7 @@ const Top: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     id: number | string
   ) => {
-    taskAccess.update(id, { done: e.target.checked });
+    void taskAccess.update(id, { done: e.target.checked });
   };
 
   const onClickAddButton = () => {
