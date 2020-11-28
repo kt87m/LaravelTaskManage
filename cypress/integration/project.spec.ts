@@ -7,6 +7,10 @@ context('project', () => {
     cy.refreshDatabase();
   });
 
+  it('show message to start project when access without "project_id" param', () => {
+    cy.visit('/').contains('タスクを追加してプロジェクトを開始');
+  });
+
   it('append project_id as search param when add task without "project_id" param', () => {
     cy.visit('/');
     cy.location('search').should('equal', '');
