@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useResource } from '../hooks/useResource';
 
 const Top: React.FC = () => {
   const history = useHistory();
+  const location = useLocation();
 
   const taskAccess = useResource('tasks');
   const tasks = taskAccess.index();
@@ -57,7 +58,7 @@ const Top: React.FC = () => {
         onClick={onClickAddButton}
         className="createTask mt-2 p-2 corner-round-5 bg-blue-500 text-white"
       >
-        + 新規追加
+        + タスクを追加
       </button>
     </div>
   );
