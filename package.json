@@ -9,7 +9,7 @@
         "type-check": "tsc --pretty --noEmit",
         "format": "prettier --write **/*.{js,ts,tsx}",
         "lint": "eslint --ext .ts,.tsx resources/ts",
-        "test": "jest",
+        "test": "jest && php artisan test && npx cypress run --spec 'cypress/integration/*'",
         "prod": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
@@ -56,20 +56,20 @@
         "ts-loader": "^8.0.7",
         "typescript": "^4.0.5"
     },
+    "dependencies": {
+        "react-router-dom": "^5.2.0",
+        "swr": "^0.3.8"
+    },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged",
-            "pre-push": "yarn --no-verify type-check"
+            "pre-push": "npm run type-check && npm run test"
         }
     },
     "lint-staged": {
         "*.@(ts|tsx)": [
-            "yarn lint",
-            "yarn format"
+            "npm run lint",
+            "npm run format"
         ]
-    },
-    "dependencies": {
-        "react-router-dom": "^5.2.0",
-        "swr": "^0.3.8"
     }
 }
