@@ -38,12 +38,10 @@ class RESTResourceAccess<T extends keyof Resources> {
 
   index() {
     const { error, data } = useSWR<Array<Resources[T]>, Error>(
-      this.uri,
+      this.uri + location.search,
       (uri) => {
         return axios
-          .get<Resources[T][], AxiosResponse<Resources[T][]>>(
-            `${uri as string}${location.search}`
-          )
+          .get<Resources[T][], AxiosResponse<Resources[T][]>>(uri)
           .then((res) => res.data);
       }
     );
@@ -75,7 +73,7 @@ class RESTResourceAccess<T extends keyof Resources> {
       )
       .then((res) => {
         if (onSuccess) onSuccess(res.data);
-        void mutate(this.uri);
+        void mutate(this.uri + location.search);
         return res;
       });
   }
@@ -83,7 +81,7 @@ class RESTResourceAccess<T extends keyof Resources> {
   update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
     // 集合キャッシュ
     void mutate(
-      this.uri,
+      this.uri + location.search,
       (data?: Resources[T][]) => {
         if (!data) return;
         return data.map((item) =>
@@ -102,14 +100,14 @@ class RESTResourceAccess<T extends keyof Resources> {
       .then((res) => mutate(uri, res.data, false))
       .catch((e) => {
         console.log(e);
-        void mutate(this.uri);
+        void mutate(this.uri + location.search);
         void mutate(uri);
       });
   }
 
   delete(id: Id) {
     void mutate(
-      this.uri,
+      this.uri + location.search,
       (data?: Resources[T][]) => {
         if (!data) return;
         return data.filter((item) => item.id != id);
@@ -120,7 +118,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     const uri = `${this.uri}/${id}`;
     return axios.delete(uri).catch((e) => {
       console.log(e);
-      void mutate(this.uri);
+      void mutate(this.uri + location.search);
     });
   }
 }
