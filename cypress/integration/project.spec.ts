@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { Resources } from '../../resources/ts/hooks/useResource';
+import { task1, task2, queryString, setupDb } from '../fixtures/tasks';
 
 context('project', () => {
   beforeEach(() => {

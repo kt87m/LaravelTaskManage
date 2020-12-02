@@ -1,17 +1,6 @@
 /// <reference types="cypress" />
 
-import { Resources } from '../../resources/ts/hooks/useResource';
-
-let task1: Resources['tasks'], task2: Resources['tasks'], queryString: string;
-function setupDb() {
-  cy.refreshDatabase().seed('TaskSeeder');
-
-  return cy.php<typeof task1[]>(`App\\Models\\Task::all();`).then((ts) => {
-    [task1, task2] = ts;
-    queryString = `?project_id=${task1.project_id}`;
-    return ts;
-  });
-}
+import { task1, task2, queryString, setupDb } from '../fixtures/tasks';
 
 context('top page', () => {
   beforeEach(() => {
