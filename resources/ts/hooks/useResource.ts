@@ -59,12 +59,10 @@ class RESTResourceAccess<T extends keyof Resources> {
 
   get(id: Id): RESTResource<T> {
     const response = useSWR<Resources[T], AxiosError<ApiError>>(
-      `${this.uri}/${id}`,
+      `${this.uri}/${id}${location.search}`,
       (uri) => {
         return axios
-          .get<Resources[T], AxiosResponse<Resources[T]>>(
-            `${uri as string}${location.search}`
-          )
+          .get<Resources[T], AxiosResponse<Resources[T]>>(uri)
           .then((res) => res.data);
       }
     );
@@ -101,7 +99,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     );
 
     // 個別キャッシュ
-    const uri = `${this.uri}/${id}`;
+    const uri = `${this.uri}/${id}${location.search}`;
     void mutate(uri, (data: Resources[T]) => ({ ...data, ...diff }), false);
 
     return axios
@@ -124,7 +122,7 @@ class RESTResourceAccess<T extends keyof Resources> {
       false
     );
 
-    const uri = `${this.uri}/${id}`;
+    const uri = `${this.uri}/${id}${location.search}`;
     return axios.delete(uri).catch((e) => {
       console.log(e);
       void mutate(this.uri + location.search);
@@ -133,7 +131,6 @@ class RESTResourceAccess<T extends keyof Resources> {
 }
 
 class RESTResource<T extends keyof Resources> {
-  private uri: string;
   public readonly error?: AxiosError<ApiError>;
   public readonly data?: Resources[T];
 
@@ -142,7 +139,6 @@ class RESTResource<T extends keyof Resources> {
     public readonly id: Id,
     response: responseInterface<Resources[T], AxiosError<ApiError>>
   ) {
-    this.uri = `${parent.uri}/${id}`;
     this.error = response.error;
     this.data = response.data;
   }
