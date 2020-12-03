@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectRequest;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ProjectRequest $request)
     {
         $project_id = $request->input('project_id');
         if (!$project_id) return [];
@@ -28,7 +29,7 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProjectRequest $request)
     {
         $validatedData = $request->validate([
             'title' => 'max:512',
@@ -47,7 +48,7 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, int $id)
+    public function show(ProjectRequest $request, int $id)
     {
         $project_id = $request->input('project_id');
         
@@ -67,7 +68,7 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(ProjectRequest $request, Task $task)
     {
         if ($task == null) {
             abort(404);
@@ -95,7 +96,7 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy(ProjectRequest $request, Task $task)
     {
         Task::destroy($task->id);
     }

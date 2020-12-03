@@ -79,6 +79,36 @@ class TaskControllerTest extends TestCase
     }
 
     /**
+     * フォーマットが不正なプロジェクトIDでアクセス
+     *
+     * @return void
+     */
+    public function testGetTaskslWithInvalidProjectId()
+    {
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => 'invalid_id']);
+
+        $response->assertStatus(400)
+            ->assertJsonFragment([
+                'プロジェクトIDの形式が不正です',
+            ]);
+    }
+
+    /**
+     * 存在しないプロジェクトIDでアクセス
+     *
+     * @return void
+     */
+    public function testGetTaskslWithProjectIdNotExists()
+    {
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => self::UUID_NOT_EXISTS]);
+
+        $response->assertStatus(404)
+            ->assertJsonFragment([
+                'プロジェクトが存在しません',
+            ]);
+    }
+
+    /**
      * タスク詳細
      *
      * @return void
@@ -100,7 +130,10 @@ class TaskControllerTest extends TestCase
     {
         $response = $this->call('GET', route('tasks.show', $this->task->id));
 
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJsonFragment([
+                'タスクがありません'
+            ]);
     }
 
     /**
