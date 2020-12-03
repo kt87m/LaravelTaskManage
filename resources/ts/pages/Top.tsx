@@ -26,7 +26,18 @@ const Top: React.FC = () => {
       .catch(console.log);
   };
 
-  if (tasks.error) return <p>{tasks.error.message}</p>;
+  if (tasks.error?.response)
+    return (
+      <>
+        {Object.values(tasks.error.response.data.errors).map((errors) =>
+          errors.map((message) => (
+            <p key={message} className="text-red-600">
+              {message}
+            </p>
+          ))
+        )}
+      </>
+    );
   if (!tasks.data) return <p>loading...</p>;
 
   const taskItems = tasks.data.map((task) => (

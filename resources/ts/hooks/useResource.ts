@@ -29,6 +29,15 @@ export type Resources = {
   projects: Project;
 };
 
+type ApiError = {
+  data: any;
+  status: string;
+  summary: string;
+  errors: {
+    [k: string]: string[];
+  };
+};
+
 class RESTResourceAccess<T extends keyof Resources> {
   public readonly uri: string;
 
@@ -37,7 +46,7 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   index() {
-    const { error, data } = useSWR<Array<Resources[T]>, Error>(
+    const { error, data } = useSWR<Array<Resources[T]>, AxiosError<ApiError>>(
       this.uri + location.search,
       (uri) => {
         return axios
@@ -49,7 +58,7 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   get(id: Id): RESTResource<T> {
-    const response = useSWR<Resources[T], AxiosError<Error>>(
+    const response = useSWR<Resources[T], AxiosError<ApiError>>(
       `${this.uri}/${id}`,
       (uri) => {
         return axios
@@ -125,13 +134,13 @@ class RESTResourceAccess<T extends keyof Resources> {
 
 class RESTResource<T extends keyof Resources> {
   private uri: string;
-  public readonly error?: AxiosError<Error>;
+  public readonly error?: AxiosError<ApiError>;
   public readonly data?: Resources[T];
 
   constructor(
     public readonly parent: RESTResourceAccess<T>,
     public readonly id: Id,
-    response: responseInterface<Resources[T], AxiosError<Error>>
+    response: responseInterface<Resources[T], AxiosError<ApiError>>
   ) {
     this.uri = `${parent.uri}/${id}`;
     this.error = response.error;
