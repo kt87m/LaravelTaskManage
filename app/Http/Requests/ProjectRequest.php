@@ -49,7 +49,8 @@ class ProjectRequest extends ApiRequest
     protected function failedValidation(Validator $validator): void
     {
         $failedWith = $validator->failed()['project_id'];
-        if ( array_key_exists('Uuid', $failedWith) ) {
+        if ( array_key_exists('Required', $failedWith)
+            || array_key_exists('Uuid', $failedWith)) {
             $this->statusCode = 400;
         } elseif ( array_key_exists('Exists', $failedWith) ) {
             $this->statusCode = 404;
