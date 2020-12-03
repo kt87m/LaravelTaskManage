@@ -3,7 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProjectRequest extends ApiRequest
 {
@@ -22,10 +23,14 @@ class ProjectRequest extends ApiRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
             'project_id' => [
+                Rule::requiredIf(!(
+                    $request->path() === 'api/tasks'
+                    && $request->method() === 'GET'
+                )),
                 'uuid',
                 'exists:projects,id',
             ],
@@ -35,6 +40,7 @@ class ProjectRequest extends ApiRequest
     public function messages()
     {
         return [
+            'project_id.required' => 'URLにプロジェクトIDが含まれていません',
             'project_id.uuid' => 'プロジェクトIDの形式が不正です',
             'project_id.exists' => 'プロジェクトが存在しません',
         ];
