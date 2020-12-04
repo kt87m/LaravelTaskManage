@@ -130,9 +130,9 @@ class TaskControllerTest extends TestCase
     {
         $response = $this->call('GET', route('tasks.show', $this->task->id));
 
-        $response->assertStatus(404)
+        $response->assertStatus(400)
             ->assertJsonFragment([
-                'タスクがありません'
+                'URLにプロジェクトIDが含まれていません'
             ]);
     }
 
@@ -151,6 +151,7 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPath()
     {
         $data = [
+            'project_id' => $this->task->project_id,
             'title' => 'test title',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -164,6 +165,7 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPath2()
     {
         $data = [
+            'project_id' => $this->task->project_id,
             'title' => 'テストタスク2',
             'done' => true,
         ];
@@ -178,6 +180,7 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPathNotExists()
     {
         $data = [
+            'project_id' => $this->task->project_id,
             'title' => 'test title 2',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -233,31 +236,39 @@ class TaskControllerTest extends TestCase
     {
         $this->assertDatabaseHas('tasks', $this->task->toArray());
         
-        $response = $this->delete(route('tasks.destroy', $this->task->id));
+        $response = $this->delete(route('tasks.destroy', $this->task->id), ['project_id' => $this->task->project_id]);
         $response->assertStatus(200);
 
         $this->assertDatabaseMissing('tasks', $this->task->toArray());
     }
 
-    public function testProjectCreatedWhenAddTaskWithoutValidProjectId()
+    public function testProjectCreatedWhenAddTaskWithoutProjectId()
     {
         $this->assertDatabaseCount('projects', 1);
 
-        // without project id
         $data = [
             'title' => 'test title',
         ];
         $response = $this->post(route('tasks.store'), $data);
+
         $response->assertStatus(201);
         $this->assertDatabaseCount('projects', 2);
+    }
 
-        // with project id not exists
+    public function testProjectDoesNotCreatedWhenAddTaskWithProjectIdNotExists()
+    {
+        $this->assertDatabaseCount('projects', 1);
+
         $data = [
             'project_id' => self::UUID_NOT_EXISTS,
             'title' => 'test title',
         ];
         $response = $this->post(route('tasks.store'), $data);
-        $response->assertStatus(201);
-        $this->assertDatabaseCount('projects', 3);
+
+        $response->assertStatus(404)
+            ->assertJsonFragment([
+                'プロジェクトが存在しません'
+            ]);
+        $this->assertDatabaseCount('projects', 1);
     }
 }

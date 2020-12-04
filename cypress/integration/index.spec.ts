@@ -28,7 +28,9 @@ context('task detail page', () => {
   });
 
   it('require "project_id" param', () => {
-    cy.visit(`/tasks/${task1.id}`).wait(1000).contains('タスクがありません');
+    cy.visit(`/tasks/${task1.id}`)
+      .wait(1000)
+      .contains('URLにプロジェクトIDが含まれていません');
     cy.visit(`/tasks/${task1.id}${queryString}`)
       .get('.taskTitle input')
       .should('has.value', task1.title);
@@ -69,16 +71,10 @@ context('update task state globaly', () => {
 
   it('change task title', () => {
     cy.visit(`/tasks/${task1.id}${queryString}`);
-    cy.get('.taskTitle input')
-      .clear()
-      .type('タイトル変更')
-      .screenshot('task_title_typed')
-      .wait(500); // wait task updating
+    cy.get('.taskTitle input').clear().type('タイトル変更').wait(1000); // wait task updating
 
     cy.visit(`/${queryString}`);
-    cy.get(`[data-task-id="${task1.id}"]`)
-      .contains('タイトル変更')
-      .screenshot('task_title_changed_in_top_page');
+    cy.get(`[data-task-id="${task1.id}"]`).contains('タイトル変更');
   });
 });
 
