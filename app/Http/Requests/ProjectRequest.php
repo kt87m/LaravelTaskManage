@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ProjectRequest extends ApiRequest
@@ -25,11 +26,12 @@ class ProjectRequest extends ApiRequest
      */
     public function rules(Request $request)
     {
+        $routeName = $request->route()->getName();
         return [
             'project_id' => [
                 Rule::requiredIf(!(
-                    $request->path() === 'api/tasks'
-                    && $request->method() === 'GET'
+                    $routeName === 'tasks.index'
+                    || $routeName === 'tasks.store'
                 )),
                 'uuid',
                 'exists:projects,id',
