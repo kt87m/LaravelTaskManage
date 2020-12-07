@@ -43,7 +43,8 @@ class ProjectMiddleware
 
         // extend project expiration
         if ($project) {
-            $project->expiration = Carbon::now('+1 hour');
+            $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
+            $project->expiration = Carbon::now("+$lifespan hour");
             $project->save();
         }
 

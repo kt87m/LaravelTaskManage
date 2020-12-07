@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Project;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -273,7 +274,8 @@ class TaskControllerTest extends TestCase
 
     public function testExpiredProjectCanNotBeFetched()
     {
-        Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime('+2 hour') ));
+        $hasExpired = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS + 1;
+        Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime("+$hasExpired hour") ));
 
         $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
 

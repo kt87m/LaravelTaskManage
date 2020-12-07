@@ -11,6 +11,8 @@ class Project extends Model
 
     protected $fillable = ['name', 'expiration'];
 
+    const TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS = 1;
+
     public function tasks()
     {
         return $this->hasMany(Task::class);
