@@ -32,6 +32,14 @@ class ProjectMiddleware
             ], $statusCode);
         }
         
+        $project = Project::find($request->project_id);
+        if ($project && $project->expiration < Carbon::now())
+            return response([
+                'data' => [],
+                'status' => 'error',
+                'summary' => 'Failed validation.',
+                'errors' => ['project_id' => ['プロジェクトが存在しません']],
+            ], 404);
         return $next($request);
     }
 

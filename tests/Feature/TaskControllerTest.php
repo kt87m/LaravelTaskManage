@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Project;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -270,5 +271,17 @@ class TaskControllerTest extends TestCase
                 'プロジェクトが存在しません'
             ]);
         $this->assertDatabaseCount('projects', 1);
+    }
+
+    public function testExpiredProjectCanNotBeFetched()
+    {
+        Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime('+2 hour') ));
+
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+
+        $response->assertStatus(404)
+            ->assertJsonFragment([
+                'プロジェクトが存在しません'
+            ]);
     }
 }
