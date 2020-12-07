@@ -2,11 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Project;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 function str_random(int $length)
@@ -283,5 +281,16 @@ class TaskControllerTest extends TestCase
             ->assertJsonFragment([
                 'プロジェクトが存在しません'
             ]);
+    }
+
+    public function testProjectExpirationIsExtendedByValidAccess()
+    {
+        $beforeExpiration = $this->task->project->expiration;
+
+        Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime('+1 second') ));
+        $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $afterExpiration = $this->task->project->fresh()->expiration;
+
+        $this->assertGreaterThan($beforeExpiration, $afterExpiration);
     }
 }

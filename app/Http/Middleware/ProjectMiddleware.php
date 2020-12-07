@@ -40,6 +40,13 @@ class ProjectMiddleware
                 'summary' => 'Failed validation.',
                 'errors' => ['project_id' => ['プロジェクトが存在しません']],
             ], 404);
+
+        // extend project expiration
+        if ($project) {
+            $project->expiration = Carbon::now('+1 hour');
+            $project->save();
+        }
+
         return $next($request);
     }
 
