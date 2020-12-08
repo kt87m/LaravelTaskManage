@@ -23,6 +23,7 @@ class ProjectTest extends TestCase
         $project->preserve();
 
         $this->assertTrue($project->preserved);
+        $this->assertTrue($project->fresh()->preserved);
         $this->assertEquals(Project::EXPIRATION_MAX, $project->expiration);
     }
 }
