@@ -11,10 +11,20 @@ class Project extends Model
 
     protected $fillable = ['name', 'expiration'];
 
+    protected $appends = [
+        'preserved'
+    ];
+
     const TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS = 1;
+    const EXPIRATION_MAX = '3000-01-01 00:00:00';
 
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function getPreservedAttribute()
+    {
+        return $this->expiration === self::EXPIRATION_MAX;
     }
 }
