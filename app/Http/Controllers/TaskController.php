@@ -51,10 +51,9 @@ class TaskController extends Controller
         
         $task = Task::where('project_id', $project_id)->find($id);
 
-        if (!$task) return response([
-                'errors' => [
-                    'not found' => ['タスクがありません']
-                ],
+        if (!$task)
+            return response()->apiError([
+                'errors' => ['project_id' => ['タスクがありません']],
             ], 404);
 
         return $task;

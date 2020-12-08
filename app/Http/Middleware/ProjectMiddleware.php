@@ -24,20 +24,12 @@ class ProjectMiddleware
 
         if ($validator->fails()) {
             $statusCode = $this->getStatusCode($validator);
-            return response([
-                'data' => [],
-                'status' => 'error',
-                'summary' => 'Failed validation.',
-                'errors' => $validator->errors()->toArray(),
-            ], $statusCode);
+            return response()->validationError($validator, $statusCode);
         }
         
         $project = Project::find($request->project_id);
         if ($project && $project->expiration < Carbon::now())
-            return response([
-                'data' => [],
-                'status' => 'error',
-                'summary' => 'Failed validation.',
+            return response()->apiError([
                 'errors' => ['project_id' => ['プロジェクトが存在しません']],
             ], 404);
 
