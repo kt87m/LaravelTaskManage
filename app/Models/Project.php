@@ -28,9 +28,9 @@ class Project extends Model
         return $this->expiration === self::EXPIRATION_MAX;
     }
 
-    public function preserve()
+    public function setPreservedAttribute(bool $preserve)
     {
+        if (!$preserve) return;
         $this->expiration = self::EXPIRATION_MAX;
-        $this->save();
     }
 }

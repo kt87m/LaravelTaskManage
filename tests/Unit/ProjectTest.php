@@ -20,10 +20,10 @@ class ProjectTest extends TestCase
         $project = Project::factory()->create();
         $this->assertFalse($project->preserved);
         
-        $project->preserve();
+        $project->preserved = true;
+        $project->save();
 
         $this->assertTrue($project->preserved);
-        $this->assertTrue($project->fresh()->preserved);
         $this->assertEquals(Project::EXPIRATION_MAX, $project->expiration);
     }
 }
