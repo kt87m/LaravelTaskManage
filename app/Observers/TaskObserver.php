@@ -20,9 +20,8 @@ class TaskObserver
         $project = $project_id && Project::find($project_id);
 
         if (!$project) {
-            $project = Project::create([
+            $project = Project::factory()->create([
                 'name' => '',
-                'expiration' => date( 'Y-m-d H:i:s', strtotime('+1 hour') ),
             ]);
             $task->project_id = $project->id;
         } else {

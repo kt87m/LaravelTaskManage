@@ -21,9 +21,10 @@ class ProjectFactory extends Factory
      */
     public function definition()
     {
+        $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
         return [
             'name' => $this->faker->sentence($nbWords = 3, $variableNbWords = true),
-            'expiration' => date( 'Y-m-d H:i:s', strtotime('+1 hour') ),
+            'expiration' => date( 'Y-m-d H:i:s', strtotime("+$lifespan hour") ),
         ];
     }
 }
