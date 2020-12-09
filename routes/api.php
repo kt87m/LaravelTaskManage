@@ -22,4 +22,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/tasks', TaskController::class)->middleware('project');
-Route::apiResource('/projects', ProjectController::class);
+Route::apiResource('/projects', ProjectController::class)->middleware('project');

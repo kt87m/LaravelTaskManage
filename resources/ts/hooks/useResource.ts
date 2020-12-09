@@ -22,6 +22,8 @@ type Task = ResourceBase & {
 };
 type Project = ResourceBase & {
   name: string;
+  expiration: string;
+  preserved: boolean;
 };
 
 export type Resources = {

@@ -34,7 +34,7 @@ class ProjectMiddleware
             ], 404);
 
         // extend project expiration
-        if ($project) {
+        if ($project && !$project->preserved) {
             $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
             $project->expiration = Carbon::now("+$lifespan hour");
             $project->save();
@@ -52,6 +52,7 @@ class ProjectMiddleware
                     Rule::requiredIf(!(
                         $routeName === 'tasks.index'
                         || $routeName === 'tasks.store'
+                        || preg_match('/^projects\./', $routeName)
                     )),
                     'uuid',
                     'exists:projects,id',

@@ -23,7 +23,7 @@ class ProjectFactory extends Factory
     {
         $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
         return [
-            'name' => $this->faker->sentence($nbWords = 3, $variableNbWords = true),
+            'name' => '新しいプロジェクト',
             'expiration' => date( 'Y-m-d H:i:s', strtotime("+$lifespan hour") ),
         ];
     }

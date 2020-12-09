@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import { Resources } from '../../resources/ts/hooks/useResource';
-import { task1, task2, queryString, setupDb } from '../fixtures/tasks';
+import { /* task1, task2, */ queryString, setupDb } from '../fixtures/tasks';
 
 context('project', () => {
   beforeEach(() => {
@@ -37,5 +37,24 @@ context('project', () => {
       cy.visit('/');
       cy.wait(1000).get('li[data-task-id]').should('not.exist');
     });
+  });
+});
+
+context('Preserve project', () => {
+  beforeEach(() => {
+    setupDb();
+  });
+
+  it('show message that project is unpreserved and button to preserve when access with `project_id` param', () => {
+    cy.visit(`/${queryString}`).contains('未保存のプロジェクト');
+    cy.get('button.preserveProject');
+  });
+
+  it('show initial project name when project is preserved', () => {
+    cy.visit(`/${queryString}`);
+    cy.get('button.preserveProject').click();
+    cy.wait(1000);
+    cy.get('button.preserveProject').should('not.exist');
+    cy.contains('新しいプロジェクト');
   });
 });

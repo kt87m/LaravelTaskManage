@@ -20,9 +20,7 @@ class TaskObserver
         $project = $project_id && Project::find($project_id);
 
         if (!$project) {
-            $project = Project::factory()->create([
-                'name' => '',
-            ]);
+            $project = Project::factory()->create();
             $task->project_id = $project->id;
         } else {
             $task->project_id = $project_id;
