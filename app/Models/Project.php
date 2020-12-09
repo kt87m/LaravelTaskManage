@@ -9,7 +9,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'expiration'];
+    protected $fillable = ['name', 'preserved'];
 
     protected $appends = [
         'preserved'
