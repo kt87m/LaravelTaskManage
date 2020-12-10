@@ -55,6 +55,6 @@ context('Preserve project', () => {
     cy.get('button.preserveProject').click();
     cy.wait(1000);
     cy.get('button.preserveProject').should('not.exist');
-    cy.contains('新しいプロジェクト');
+    cy.get('.projectName').should('has.value', '新しいプロジェクト');
   });
 });
