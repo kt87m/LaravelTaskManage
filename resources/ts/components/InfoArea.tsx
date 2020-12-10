@@ -13,15 +13,23 @@ const InfoArea: React.FC = () => {
     project.update({ preserved: true }).catch(console.log);
   };
 
+  const onChangeProjectName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    project.update({ name: e.target.value }).catch(console.log);
+  };
+
   let content;
   if (!projectId)
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
   else if (!project.error && project.data) {
     if (project.data.preserved)
       content = (
-        <p className="self-center" contentEditable>
-          {project.data.name}
-        </p>
+        <input
+          key={projectId}
+          placeholder="プロジェクト名を入力"
+          defaultValue={project.data.name}
+          onChange={onChangeProjectName}
+          className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300"
+        />
       );
     else
       content = (
