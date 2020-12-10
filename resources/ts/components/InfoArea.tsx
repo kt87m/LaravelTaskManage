@@ -16,7 +16,7 @@ const InfoArea: React.FC = () => {
   let content;
   if (!projectId)
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
-  else if (project.data) {
+  else if (!project.error && project.data) {
     if (project.data.preserved)
       content = (
         <p className="self-center" contentEditable>
