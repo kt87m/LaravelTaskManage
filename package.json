@@ -11,6 +11,7 @@
         "lint": "eslint --ext .ts,.tsx resources/ts",
         "test": "jest && php artisan test && npx cypress run --spec 'cypress/integration/*'",
         "prod": "npm run production",
+        "build": "npm run production",
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
