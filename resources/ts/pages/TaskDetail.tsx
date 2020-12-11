@@ -1,15 +1,15 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import useCallbackBuffer from '../hooks/useCallbackBuffer';
 
 import { useResource } from '../hooks/useResource';
-
-let inputTimer: number | undefined;
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory<{ fromTop?: boolean } | undefined>();
 
   const task = useResource('tasks').get(id);
+  const titleChangeBuffer = useCallbackBuffer();
 
   if (task.error?.response)
     return (
@@ -27,11 +27,9 @@ const TaskDetail: React.FC = () => {
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
-    if (inputTimer) clearTimeout(inputTimer);
-    inputTimer = window.setTimeout(() => {
-      inputTimer = undefined;
+    titleChangeBuffer(() => {
       void task.update({ title });
-    }, 1000);
+    });
   };
 
   const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {

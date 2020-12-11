@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { useResource } from '../hooks/useResource';
 
 const InfoArea: React.FC = () => {
@@ -13,8 +14,12 @@ const InfoArea: React.FC = () => {
     project.update({ preserved: true }).catch(console.log);
   };
 
+  const changeProjectNameBuffer = useCallbackBuffer();
   const onChangeProjectName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    project.update({ name: e.target.value }).catch(console.log);
+    const name = e.target.value;
+    changeProjectNameBuffer(() => {
+      project.update({ name }).catch(console.log);
+    });
   };
 
   let content;
