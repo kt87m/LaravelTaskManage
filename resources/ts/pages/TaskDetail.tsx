@@ -1,40 +1,47 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import useCallbackBuffer from '../hooks/useCallbackBuffer';
 
 import { useResource } from '../hooks/useResource';
 
-let inputTimer: number | undefined;
-
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const history = useHistory();
+  const history = useHistory<{ fromTop?: boolean } | undefined>();
 
   const task = useResource('tasks').get(id);
+  const titleChangeBuffer = useCallbackBuffer();
+
+  if (task.error?.response)
+    return (
+      <>
+        {Object.values(task.error.response.data.errors).map((errors) =>
+          errors.map((message) => (
+            <p key={message} className="text-red-600">
+              {message}
+            </p>
+          ))
+        )}
+      </>
+    );
+  if (!task.data) return <p>loading...</p>;
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!task.data) return;
     const title = e.target.value;
-    if (inputTimer) clearTimeout(inputTimer);
-    inputTimer = window.setTimeout(() => {
-      inputTimer = undefined;
-      task.update({ title });
-    }, 1000);
-  };
-
-  const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!task.data) return;
-    task.update({ done: e.target.checked });
-  };
-
-  const onClickDeleteTask = () => {
-    if (!task.data) return;
-    void task.deleteSelf().then(() => {
-      history.push('/');
+    titleChangeBuffer(() => {
+      void task.update({ title });
     });
   };
 
-  if (task.error) return <p>{task.error.message}</p>;
-  if (!task.data) return <p>loading...</p>;
+  const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    void task.update({ done: e.target.checked });
+  };
+
+  const onClickDeleteTask = () => {
+    void task.deleteSelf().then(() => {
+      if (history.location.state?.fromTop) history.goBack();
+      else history.replace(`/${location.search}`);
+    });
+  };
 
   return (
     <div>

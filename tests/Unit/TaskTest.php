@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -10,9 +11,11 @@ class TaskTest extends TestCase
 {
     use RefreshDatabase;
 
+    const ID_NOT_EXISTS = 0;
+
     public function testGetTaskNotExists()
     {
-        $task = Task::find(0);
+        $task = Task::find(self::ID_NOT_EXISTS);
         $this->assertNull($task);
     }
 

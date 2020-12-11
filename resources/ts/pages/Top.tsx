@@ -1,8 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useResource } from '../hooks/useResource';
 
 const Top: React.FC = () => {
+  const history = useHistory();
+  const location = useLocation();
+
   const taskAccess = useResource('tasks');
   const tasks = taskAccess.index();
 
@@ -10,21 +13,43 @@ const Top: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     id: number | string
   ) => {
-    taskAccess.update(id, { done: e.target.checked });
+    void taskAccess.update(id, { done: e.target.checked });
   };
 
   const onClickAddButton = () => {
-    taskAccess.create({
-      done: false,
-    });
+    taskAccess
+      .create({ done: false }, (createdTask) =>
+        history.replace(
+          `${location.pathname}?project_id=${createdTask.project_id}`
+        )
+      )
+      .catch(console.log);
   };
 
-  if (tasks.error) return <p>{tasks.error.message}</p>;
+  if (tasks.error?.response)
+    return (
+      <>
+        {Object.values(tasks.error.response.data.errors).map((errors) =>
+          errors.map((message) => (
+            <p key={message} className="text-red-600">
+              {message}
+            </p>
+          ))
+        )}
+      </>
+    );
   if (!tasks.data) return <p>loading...</p>;
 
   const taskItems = tasks.data.map((task) => (
     <li key={task.id} data-task-id={task.id} className="flex items-center">
-      <Link to={`/tasks/${task.id}`} className="linkToDetail order-1">
+      <Link
+        to={{
+          pathname: `/tasks/${task.id}`,
+          search: location.search,
+          state: { fromTop: true },
+        }}
+        className="linkToDetail order-1"
+      >
         {task.title || <span className="text-gray-500">名称未設定タスク</span>}
       </Link>
       <input
@@ -44,7 +69,7 @@ const Top: React.FC = () => {
         onClick={onClickAddButton}
         className="createTask mt-2 p-2 corner-round-5 bg-blue-500 text-white"
       >
-        + 新規追加
+        + タスクを追加
       </button>
     </div>
   );

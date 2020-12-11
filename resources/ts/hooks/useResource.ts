@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { responseInterface, mutate } from 'swr';
 
 export function useResource<T extends keyof Resources>(
@@ -16,11 +16,14 @@ type ResourceBase = {
 };
 
 type Task = ResourceBase & {
+  project_id: string;
   title: string;
   done: boolean;
 };
 type Project = ResourceBase & {
   name: string;
+  expiration: string;
+  preserved: boolean;
 };
 
 export type Resources = {
@@ -28,81 +31,125 @@ export type Resources = {
   projects: Project;
 };
 
+type ApiError = {
+  data: any;
+  status: string;
+  summary: string;
+  errors: {
+    [k: string]: string[];
+  };
+};
+
 class RESTResourceAccess<T extends keyof Resources> {
-  private uri: string;
+  public readonly uri: string;
 
   constructor(private type: T) {
     this.uri = `/api/${this.type}`;
   }
 
   index() {
-    const { error, data } = useSWR<Array<Resources[T]>, Error>(this.uri);
+    const { error, data } = useSWR<Array<Resources[T]>, AxiosError<ApiError>>(
+      this.uri + location.search,
+      (uri) => {
+        return axios
+          .get<Resources[T][], AxiosResponse<Resources[T][]>>(uri)
+          .then((res) => res.data);
+      }
+    );
     return { error, data };
   }
 
-  get(id: Id) {
-    const response = useSWR<Resources[T], Error>(`${this.uri}/${id}`);
-    return new RESTResource(this.type, id, response);
+  get(id: Id): RESTResource<T> {
+    const response = useSWR<Resources[T], AxiosError<ApiError>>(
+      `${this.uri}/${id}${location.search}`,
+      (uri) => {
+        return axios
+          .get<Resources[T], AxiosResponse<Resources[T]>>(uri)
+          .then((res) => res.data);
+      }
+    );
+    return new RESTResource(this, id, response);
   }
 
-  create(data: Partial<Omit<Resources[T], keyof ResourceBase>>) {
-    axios
-      .post(this.uri, data)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
+  create(
+    data: Partial<Omit<Resources[T], keyof ResourceBase>>,
+    onSuccess?: (res: Resources[T]) => void
+  ) {
+    return axios
+      .post<Resources[T], AxiosResponse<Resources[T]>>(
+        this.uri + location.search,
+        data
+      )
+      .then((res) => {
+        if (onSuccess) onSuccess(res.data);
+        void mutate(this.uri + location.search);
+        return res;
       });
   }
 
-  update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>): void {
-    const uri = `${this.uri}/${id}`;
-    axios
-      .put(uri, diff)
-      .then(() => mutate(this.uri))
+  update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+    // 集合キャッシュ
+    void mutate(
+      this.uri + location.search,
+      (data?: Resources[T][]) => {
+        if (!data) return;
+        return data.map((item) =>
+          item.id == id ? { ...item, ...diff } : item
+        );
+      },
+      false
+    );
+
+    // 個別キャッシュ
+    const uri = `${this.uri}/${id}${location.search}`;
+    void mutate(uri, (data: Resources[T]) => ({ ...data, ...diff }), false);
+
+    return axios
+      .put<Resources[T]>(uri, diff)
+      .then((res) => mutate(uri, res.data, false))
       .catch((e) => {
         console.log(e);
+        void mutate(this.uri + location.search);
+        void mutate(uri);
       });
   }
 
   delete(id: Id) {
-    const uri = `${this.uri}/${id}`;
-    return axios
-      .delete(uri)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
-      });
+    void mutate(
+      this.uri + location.search,
+      (data?: Resources[T][]) => {
+        if (!data) return;
+        return data.filter((item) => item.id != id);
+      },
+      false
+    );
+
+    const uri = `${this.uri}/${id}${location.search}`;
+    return axios.delete(uri).catch((e) => {
+      console.log(e);
+      void mutate(this.uri + location.search);
+    });
   }
 }
 
 class RESTResource<T extends keyof Resources> {
-  private uri: string;
-  public readonly error?: Error;
+  public readonly error?: AxiosError<ApiError>;
   public readonly data?: Resources[T];
 
   constructor(
-    public readonly type: T,
+    public readonly parent: RESTResourceAccess<T>,
     public readonly id: Id,
-    response: responseInterface<Resources[T], Error>
+    response: responseInterface<Resources[T], AxiosError<ApiError>>
   ) {
-    this.uri = `/api/${type}/${id}`;
     this.error = response.error;
     this.data = response.data;
   }
 
-  update(data: Partial<Resources[T]>): void {
-    void mutate(this.uri, { ...this.data, data }, false);
-    axios
-      .put(this.uri, data)
-      .then(() => mutate(this.uri))
-      .catch((e) => {
-        console.log(e);
-      });
+  update(diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
+    return this.parent.update(this.id, diff);
   }
 
   deleteSelf() {
-    return axios.delete(this.uri).catch((e) => {
-      console.log(e);
-    });
+    return this.parent.delete(this.id);
   }
 }

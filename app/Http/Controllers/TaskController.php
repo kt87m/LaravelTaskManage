@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -13,9 +12,12 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Task::orderBy('id', 'asc')->get();
+        $project_id = $request->input('project_id');
+        if (!$project_id) return [];
+
+        return Task::where('project_id', $project_id)->orderBy('created_at', 'asc')->get();
     }
 
     /**
@@ -29,8 +31,8 @@ class TaskController extends Controller
         $validatedData = $request->validate([
             'title' => 'max:512',
         ]);
-        
-        Task::create([
+
+        return Task::create([
             'title' => $request->title ?? '',
             'done' => false,
         ]);
@@ -39,11 +41,21 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Task  $task
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function show(Request $request, int $id)
     {
+        $project_id = $request->input('project_id');
+        
+        $task = Task::where('project_id', $project_id)->find($id);
+
+        if (!$task)
+            return response()->apiError([
+                'errors' => ['project_id' => ['タスクがありません']],
+            ], 404);
+
         return $task;
     }
 
@@ -72,6 +84,8 @@ class TaskController extends Controller
             $task->fill($fillData);
             $task->save();
         }
+
+        return $task;
     }
 
     /**
@@ -80,7 +94,7 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy(Request $request, Task $task)
     {
         Task::destroy($task->id);
     }

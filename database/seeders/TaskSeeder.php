@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
 use DateTime;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class TasksTableSeeder extends Seeder
+class TaskSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +16,10 @@ class TasksTableSeeder extends Seeder
      */
     public function run()
     {
+        $project = Project::factory()->create();
+
         DB::table('tasks')->insert([
+            'project_id' => $project->id,
             'title' => 'テストタスク',
             'done' => true,
             'created_at' => new DateTime(),
@@ -23,6 +27,7 @@ class TasksTableSeeder extends Seeder
         ]);
 
         DB::table('tasks')->insert([
+            'project_id' => $project->id,
             'title' => 'テストタスク2',
             'done' => false,
             'created_at' => new DateTime(),

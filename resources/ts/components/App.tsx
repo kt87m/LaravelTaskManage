@@ -3,18 +3,22 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import TaskDetail from '../pages/TaskDetail';
 import Top from '../pages/Top';
+import InfoArea from './InfoArea';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Switch>
-        <Route path="/tasks/:id">
-          <TaskDetail />
-        </Route>
-        <Route path="/">
-          <Top />
-        </Route>
-      </Switch>
+      <InfoArea />
+      <div className="container mx-auto p-5 md:py-10 md:px-0">
+        <Switch>
+          <Route path="/tasks/:id">
+            <TaskDetail />
+          </Route>
+          <Route path="/">
+            <Top />
+          </Route>
+        </Switch>
+      </div>
     </Router>
   );
 };
