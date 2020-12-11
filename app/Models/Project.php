@@ -15,6 +15,16 @@ class Project extends Model
         'preserved'
     ];
 
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::deleting(function ($model) {
+            foreach ($model->tasks as $task) {
+                $task->delete();
+            }
+        });
+    }
+
     const TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS = 1;
     const EXPIRATION_MAX = '3000-01-01 00:00:00';
 
