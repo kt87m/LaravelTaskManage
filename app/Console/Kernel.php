@@ -25,7 +25,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:delete-expired-projects')
-            ->everyThreeHours();
+            ->everyThreeHours()
+            ->onFailure(function () {
+                logger()->error('Deleting expired projects failed.');
+            });
     }
 
     /**
