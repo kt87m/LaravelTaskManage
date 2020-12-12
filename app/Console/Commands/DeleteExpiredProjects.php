@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Project;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class DeleteExpiredProjects extends Command
@@ -39,7 +38,7 @@ class DeleteExpiredProjects extends Command
      */
     public function handle()
     {
-        $expiredProjects = Project::whereDate('expiration', '<=', Carbon::now())->get();
+        $expiredProjects = Project::where('expiration', '<', now())->get();
         foreach ($expiredProjects as $xp) {
             $xp->delete();
         }
