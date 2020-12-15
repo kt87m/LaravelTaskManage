@@ -7,6 +7,9 @@ module.exports = {
   theme: {
     extend: {},
   },
-  variants: {},
+  variants: {
+    backgroundColor: ['hover', 'group-hover', 'checked'],
+    borderColor: ['hover', 'checked', 'focus'],
+  },
   plugins: [],
 }

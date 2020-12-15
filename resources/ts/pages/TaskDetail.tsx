@@ -1,6 +1,8 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import { Checkbox } from '../components/Checkbox';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
+import { AiTwotoneDelete } from 'react-icons/ai';
 
 import { useResource } from '../hooks/useResource';
 
@@ -46,24 +48,20 @@ const TaskDetail: React.FC = () => {
   return (
     <div>
       <div className="flex items-center">
-        <h1 className="taskTitle">
+        <h1 className="taskTitle flex-grow">
           <input
             defaultValue={task.data.title}
             onChange={onTitleChange}
-            className="p-1 border-gray-400 border-solid border"
+            className="w-full p-1 border-gray-400 border-solid border rounded-sm"
           />
         </h1>
-        <input
-          type="checkbox"
-          checked={task.data.done}
-          onChange={onToggleCheck}
-          className="mr-2 order-first"
-        />
+        <Checkbox checked={task.data.done} onChange={onToggleCheck} />
         <button
           type="button"
           onClick={onClickDeleteTask}
-          className="deleteTask ml-5 p-1 corner-round-5 bg-red-500 text-white"
+          className="deleteTask flex items-center ml-8 py-1 px-2 rounded-sm bg-red-500 text-white"
         >
+          <AiTwotoneDelete className="mr-1 text-xl" />
           削除
         </button>
       </div>
