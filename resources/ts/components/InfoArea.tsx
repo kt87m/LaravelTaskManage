@@ -2,6 +2,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { useResource } from '../hooks/useResource';
+import { GoPlus } from 'react-icons/go';
+import { GoCloudUpload } from 'react-icons/go';
 
 const InfoArea: React.FC = () => {
   const location = useLocation();
@@ -41,9 +43,10 @@ const InfoArea: React.FC = () => {
         <>
           <p className="self-center">未保存のプロジェクト</p>
           <button
-            className="preserveProject self-center ml-3 py-1 px-2 text-xs rounded-sm bg-white shadow-sm"
             onClick={onClickPreserveProject}
+            className="preserveProject flex items-center self-center ml-8 py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow"
           >
+            <GoCloudUpload className="text-lg mr-1" />
             プロジェクトを保存する
           </button>
         </>
@@ -58,9 +61,10 @@ const InfoArea: React.FC = () => {
           {projectId && (
             <Link
               to="/"
-              className="block ml-auto p-3 text-blue-500 hover:bg-gray-300 transition-all"
+              className="flex ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
             >
-              + 新規プロジェクト
+              <GoPlus className="mr-1 self-center text-xl" />
+              新規プロジェクト
             </Link>
           )}
         </div>
