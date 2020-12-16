@@ -1,5 +1,7 @@
 const mix = require('laravel-mix');
 
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,8 +13,9 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.ts('resources/ts/index.tsx', 'public/js')
-  .postCss('resources/css/style.css', 'public/css', [
+const isDevelopment = !mix.inProduction();
+
+mix.postCss('resources/css/style.css', 'public/css', [
     require('tailwindcss'),
   ])
   .webpackConfig({
@@ -22,4 +25,33 @@ mix.ts('resources/ts/index.tsx', 'public/js')
         '*': 'http://localhost:8000'
       }
     },
+    entry: {
+      "/js/index": [
+        "./resources/ts/index.tsx",
+      ]
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          include: path.join(__dirname, 'resources/ts'),
+          use: [
+            isDevelopment && {
+              loader: 'babel-loader',
+              options: { plugins: ['react-refresh/babel'] },
+            },
+            {
+              loader: 'ts-loader',
+              options: { transpileOnly: true },
+            },
+          ].filter(Boolean),
+        },
+      ],
+    },
+    plugins: [
+      isDevelopment && new ReactRefreshPlugin(),
+    ].filter(Boolean),
+    resolve: {
+      extensions: ['.js', '.ts', '.tsx'],
+    },  
   });
