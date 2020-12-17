@@ -16,7 +16,7 @@ class TaskObserver
      */
     public function creating(Task $task)
     {
-        $project_id = Request::input('project_id');
+        $project_id = $task->project_id;
         $project = $project_id && Project::find($project_id);
 
         if (!$project) {

@@ -27,10 +27,21 @@ class TaskControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->task = Task::create([
+        $task = Task::create([
             'title' => 'テストタスク',
             'done' => false,
         ]);
+
+        $this->tasks = [
+            $task,
+            Task::create([
+                'project_id' => $task->project_id,
+                'title' => 'テストタスク2',
+                'done' => true,
+            ]),
+        ];
+
+        $this->initialTaskCount = count($this->tasks);
     }
 
     /**
@@ -46,10 +57,10 @@ class TaskControllerTest extends TestCase
             ->assertJson([]);
 
         // セットアップ済みのproject_idでGET
-        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
         $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment($this->task->toArray());
+            ->assertJsonCount($this->initialTaskCount)
+            ->assertJsonFragment($this->tasks[0]->toArray());
     }
 
     /**
@@ -66,10 +77,10 @@ class TaskControllerTest extends TestCase
         ]);
 
         // セットアップ済みのプロジェクト/タスク取得
-        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
         $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment($this->task->toArray());
+            ->assertJsonCount($this->initialTaskCount)
+            ->assertJsonFragment($this->tasks[0]->toArray());
 
         // 新規作成したプロジェクト/タスク取得
         $response = $this->call('GET', route('tasks.index'), ['project_id' => $newTask->project_id]);
@@ -115,10 +126,10 @@ class TaskControllerTest extends TestCase
      */
     public function testGetTaskDetail()
     {
-        $response = $this->call('GET', route('tasks.show', $this->task->id), ['project_id' => $this->task->project_id]);
+        $response = $this->call('GET', route('tasks.show', $this->tasks[0]->id), ['project_id' => $this->tasks[0]->project_id]);
 
         $response->assertStatus(200)
-            ->assertJsonFragment([ 'id' => $this->task->id ]);
+            ->assertJsonFragment([ 'id' => $this->tasks[0]->id ]);
     }
 
     /**
@@ -128,7 +139,7 @@ class TaskControllerTest extends TestCase
      */
     public function testGetTaskDetailWithoutProjectId()
     {
-        $response = $this->call('GET', route('tasks.show', $this->task->id));
+        $response = $this->call('GET', route('tasks.show', $this->tasks[0]->id));
 
         $response->assertStatus(400)
             ->assertJsonFragment([
@@ -143,7 +154,7 @@ class TaskControllerTest extends TestCase
      */
     public function testGetTaskPathNotExists()
     {
-        $response = $this->call('GET', route('tasks.show', 0), ['project_id' => $this->task->project_id]);
+        $response = $this->call('GET', route('tasks.show', 0), ['project_id' => $this->tasks[0]->project_id]);
 
         $response->assertStatus(404);
     }
@@ -151,12 +162,12 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPath()
     {
         $data = [
-            'project_id' => $this->task->project_id,
+            'project_id' => $this->tasks[0]->project_id,
             'title' => 'test title',
         ];
         $this->assertDatabaseMissing('tasks', $data);
         
-        $response = $this->put(route('tasks.update', $this->task->id), $data);
+        $response = $this->put(route('tasks.update', $this->tasks[0]->id), $data);
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', $data);
@@ -165,13 +176,13 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPath2()
     {
         $data = [
-            'project_id' => $this->task->project_id,
-            'title' => 'テストタスク2',
+            'project_id' => $this->tasks[0]->project_id,
+            'title' => 'test title',
             'done' => true,
         ];
         $this->assertDatabaseMissing('tasks', $data);
         
-        $response = $this->put(route('tasks.update', $this->task->id), $data);
+        $response = $this->put(route('tasks.update', $this->tasks[0]->id), $data);
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', $data);
@@ -180,7 +191,7 @@ class TaskControllerTest extends TestCase
     public function testPutTaskPathNotExists()
     {
         $data = [
-            'project_id' => $this->task->project_id,
+            'project_id' => $this->tasks[0]->project_id,
             'title' => 'test title 2',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -194,7 +205,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTask()
     {
         $data = [
-            'project_id' => $this->task->project_id,
+            'project_id' => $this->tasks[0]->project_id,
             'title' => 'test title',
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -208,7 +219,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTaskTitleMaxLength()
     {
         $data = [
-            'project_id' => $this->task->project_id,
+            'project_id' => $this->tasks[0]->project_id,
             'title' => str_random(512),
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -222,7 +233,7 @@ class TaskControllerTest extends TestCase
     public function testCreateTaskTitleMaxLengthPlus1_failed()
     {
         $data = [
-            'project_id' => $this->task->project_id,
+            'project_id' => $this->tasks[0]->project_id,
             'title' => str_random(513),
         ];
         $this->assertDatabaseMissing('tasks', $data);
@@ -234,12 +245,12 @@ class TaskControllerTest extends TestCase
 
     public function testDeleteTask()
     {
-        $this->assertDatabaseHas('tasks', $this->task->toArray());
+        $this->assertDatabaseHas('tasks', $this->tasks[0]->toArray());
         
-        $response = $this->delete(route('tasks.destroy', $this->task->id), ['project_id' => $this->task->project_id]);
+        $response = $this->delete(route('tasks.destroy', $this->tasks[0]->id), ['project_id' => $this->tasks[0]->project_id]);
         $response->assertStatus(200);
 
-        $this->assertDatabaseMissing('tasks', $this->task->toArray());
+        $this->assertDatabaseMissing('tasks', $this->tasks[0]->toArray());
     }
 
     public function testProjectCreatedWhenAddTaskWithoutProjectId()
@@ -277,7 +288,7 @@ class TaskControllerTest extends TestCase
         $hasExpired = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS + 1;
         Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime("+$hasExpired hour") ));
 
-        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
+        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
 
         $response->assertStatus(404)
             ->assertJsonFragment([
@@ -287,11 +298,11 @@ class TaskControllerTest extends TestCase
 
     public function testProjectExpirationIsExtendedByValidAccess()
     {
-        $beforeExpiration = $this->task->project->expiration;
+        $beforeExpiration = $this->tasks[0]->project->expiration;
 
         Carbon::setTestNow(date( 'Y-m-d H:i:s', strtotime('+1 second') ));
-        $this->call('GET', route('tasks.index'), ['project_id' => $this->task->project_id]);
-        $afterExpiration = $this->task->project->fresh()->expiration;
+        $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
+        $afterExpiration = $this->tasks[0]->project->fresh()->expiration;
 
         $this->assertGreaterThan($beforeExpiration, $afterExpiration);
     }
