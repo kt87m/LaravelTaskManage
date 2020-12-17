@@ -33,6 +33,7 @@ class TaskController extends Controller
         ]);
 
         return Task::create([
+            'project_id' => $request->project_id,
             'title' => $request->title ?? '',
             'done' => false,
         ]);
