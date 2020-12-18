@@ -1,44 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { responseInterface, mutate } from 'swr';
+import { ApiError, Id, ResourceBase, Resources } from '../types/api';
 
 export function useResource<T extends keyof Resources>(
   type: T
 ): RESTResourceAccess<T> {
   return new RESTResourceAccess(type);
 }
-
-type Id = number | string;
-
-type ResourceBase = {
-  id: Id;
-  created_at: string;
-  updated_at: string;
-};
-
-type Task = ResourceBase & {
-  project_id: string;
-  title: string;
-  done: boolean;
-};
-type Project = ResourceBase & {
-  name: string;
-  expiration: string;
-  preserved: boolean;
-};
-
-export type Resources = {
-  tasks: Task;
-  projects: Project;
-};
-
-type ApiError = {
-  data: any;
-  status: string;
-  summary: string;
-  errors: {
-    [k: string]: string[];
-  };
-};
 
 class RESTResourceAccess<T extends keyof Resources> {
   public readonly uri: string;
