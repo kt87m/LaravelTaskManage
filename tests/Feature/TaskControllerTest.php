@@ -306,4 +306,32 @@ class TaskControllerTest extends TestCase
 
         $this->assertGreaterThan($beforeExpiration, $afterExpiration);
     }
+
+    /**
+     * タスクフィルター
+     *
+     * @dataProvider providerFilter
+     * @return void
+     */
+    public function testFilterTask($done, $expected)
+    {
+        $response = $this->call('GET', route('tasks.index'), [
+            'project_id' => $this->tasks[0]->project_id,
+            'done' => $done,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment([ 'done' => $expected ]);
+    }
+
+    public function providerFilter()
+    {
+        return [
+            ['1', true],
+            ['true', true],
+            ['0', false],
+            ['false', false],
+        ];
+    }
 }
