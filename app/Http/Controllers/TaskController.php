@@ -17,7 +17,12 @@ class TaskController extends Controller
         $project_id = $request->input('project_id');
         if (!$project_id) return [];
 
-        return Task::where('project_id', $project_id)->orderBy('created_at', 'asc')->get();
+        return Task::where('project_id', $project_id)
+            ->when($request->has('done'), function ($query) use ($request) {
+                return $query->where('done', $request->done);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
     }
 
     /**
