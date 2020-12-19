@@ -2,6 +2,7 @@ import React from 'react';
 import { GoPlus } from 'react-icons/go';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Checkbox } from '../components/Checkbox';
+import { Errors } from '../components/Errors';
 import { useResource } from '../hooks/useResource';
 
 const Top: React.FC = () => {
@@ -28,18 +29,7 @@ const Top: React.FC = () => {
       .catch(console.log);
   };
 
-  if (tasks.error?.response)
-    return (
-      <>
-        {Object.values(tasks.error.response.data.errors).map((errors) =>
-          errors.map((message) => (
-            <p key={message} className="text-red-600">
-              {message}
-            </p>
-          ))
-        )}
-      </>
-    );
+  if (tasks.error?.response) return <Errors error={tasks.error} />;
   if (!tasks.data) return <p>loading...</p>;
 
   const taskItems = tasks.data.map((task) => (

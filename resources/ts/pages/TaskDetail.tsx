@@ -5,6 +5,7 @@ import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { AiTwotoneDelete } from 'react-icons/ai';
 
 import { useResource } from '../hooks/useResource';
+import { Errors } from '../components/Errors';
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,18 +14,7 @@ const TaskDetail: React.FC = () => {
   const task = useResource('tasks').get(id);
   const titleChangeBuffer = useCallbackBuffer();
 
-  if (task.error?.response)
-    return (
-      <>
-        {Object.values(task.error.response.data.errors).map((errors) =>
-          errors.map((message) => (
-            <p key={message} className="text-red-600">
-              {message}
-            </p>
-          ))
-        )}
-      </>
-    );
+  if (task.error?.response) return <Errors error={task.error} />;
   if (!task.data) return <p>loading...</p>;
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
