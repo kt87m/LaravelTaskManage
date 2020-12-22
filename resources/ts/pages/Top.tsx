@@ -12,6 +12,9 @@ const Top: React.FC = () => {
   const taskAccess = useResource('tasks');
   const tasks = taskAccess.index();
 
+  const searchParams = new URLSearchParams(location.search);
+  const filter = (/done=[^&]+/.exec(location.search) ?? [''])[0];
+
   const onToggleCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number | string
@@ -21,12 +24,25 @@ const Top: React.FC = () => {
 
   const onClickAddButton = () => {
     taskAccess
-      .create({ done: false }, (createdTask) =>
-        history.replace(
-          `${location.pathname}?project_id=${createdTask.project_id}`
-        )
-      )
+      .create({ done: false }, (createdTask) => {
+        searchParams.set('project_id', createdTask.project_id);
+
+        history.replace({
+          search: searchParams.toString(),
+        });
+      })
       .catch(console.log);
+  };
+
+  const onChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value) {
+      const [key, value] = e.target.value.split('=');
+      searchParams.set(key, value);
+    } else searchParams.delete('done');
+
+    history.replace({
+      search: searchParams.toString(),
+    });
   };
 
   if (tasks.error?.response) return <Errors error={tasks.error} />;
@@ -57,6 +73,22 @@ const Top: React.FC = () => {
 
   return (
     <div>
+      <h2 className="text-2xl mb-3 text-gray-500">タスク一覧</h2>
+
+      <label>
+        フィルター
+        <select
+          data-testid="filter"
+          value={filter}
+          onChange={onChangeFilter}
+          className="ml-3 mb-3 border-b-2 border-gray-300"
+        >
+          <option value="">全て</option>
+          <option value="done=true">完了済み</option>
+          <option value="done=false">未完了</option>
+        </select>
+      </label>
+
       <ul>{taskItems}</ul>
       <div
         onClick={onClickAddButton}
