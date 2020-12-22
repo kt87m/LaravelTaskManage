@@ -1,4 +1,4 @@
-import { Resources } from '../../resources/ts/hooks/useResource';
+import { Resources } from '../../resources/ts/types/api';
 
 export let task1: Resources['tasks'];
 export let task2: Resources['tasks'];
