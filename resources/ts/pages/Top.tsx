@@ -1,8 +1,7 @@
 import React from 'react';
 import { GoPlus } from 'react-icons/go';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { Checkbox } from '../components/Checkbox';
-import { Errors } from '../components/Errors';
+import { useHistory, useLocation } from 'react-router-dom';
+import TaskList from '../components/TaskList';
 import { useResource } from '../hooks/useResource';
 
 const Top: React.FC = () => {
@@ -45,32 +44,6 @@ const Top: React.FC = () => {
     });
   };
 
-  if (tasks.error?.response) return <Errors error={tasks.error} />;
-  if (!tasks.data) return <p>loading...</p>;
-
-  const taskItems = tasks.data.map((task) => (
-    <li
-      key={task.id}
-      data-task-id={task.id}
-      className="border-b-2 border-gray-200"
-    >
-      <Link
-        to={{
-          pathname: `/tasks/${task.id}`,
-          search: location.search,
-          state: { fromTop: true },
-        }}
-        className="linkToDetail flex items-center p-3 transition-all duration-100 hover:bg-blue-100"
-      >
-        {task.title || <span className="text-gray-500">名称未設定タスク</span>}
-        <Checkbox
-          checked={task.done}
-          onChange={(e) => onToggleCheck(e, task.id)}
-        />
-      </Link>
-    </li>
-  ));
-
   return (
     <div>
       <h2 className="text-2xl mb-3 text-gray-500">タスク一覧</h2>
@@ -89,7 +62,8 @@ const Top: React.FC = () => {
         </select>
       </label>
 
-      <ul>{taskItems}</ul>
+      <TaskList tasks={tasks} onToggleCheck={onToggleCheck} />
+
       <div
         onClick={onClickAddButton}
         className="group cursor-pointer inline-flex items-center mt-10 duration-100 text-gray-500 hover:text-blue-500"
