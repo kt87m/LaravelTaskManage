@@ -27,10 +27,11 @@ class RESTResourceAccess<T extends keyof Resources> {
     return { error, data };
   }
 
-  get(id: Id): RESTResource<T> {
+  get(id: Id, key?: string): RESTResource<T> {
+    const uri = `${this.uri}/${id}${location.search}`;
     const response = useSWR<Resources[T], AxiosError<ApiError>>(
-      `${this.uri}/${id}${location.search}`,
-      (uri) => {
+      key ?? uri,
+      () => {
         return axios
           .get<Resources[T], AxiosResponse<Resources[T]>>(uri)
           .then((res) => res.data);

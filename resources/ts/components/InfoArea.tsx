@@ -10,7 +10,7 @@ const InfoArea: React.FC = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const projectId = searchParams.get('project_id') || '';
-  const project = useResource('projects').get(projectId);
+  const project = useResource('projects').get(projectId, projectId);
 
   const onClickPreserveProject = () => {
     project.update({ preserved: true }).catch(console.log);
