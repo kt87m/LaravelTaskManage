@@ -52,6 +52,7 @@ class ProjectMiddleware
                     Rule::requiredIf(!(
                         $routeName === 'tasks.index'
                         || $routeName === 'tasks.store'
+                        || preg_match('/^projects\./', $routeName)
                     )),
                     'uuid',
                     'exists:projects,id',
