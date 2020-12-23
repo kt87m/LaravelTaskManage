@@ -27,7 +27,14 @@ const InfoArea: React.FC = () => {
   let content;
   if (!projectId)
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
-  else if (!project.error && project.data) {
+  else if (project.error?.response) {
+    const errors = project.error.response.data.errors;
+    content = (
+      <p className="self-center text-red-600">
+        {Object.values(errors).join(', ')}
+      </p>
+    );
+  } else if (project.data) {
     if (project.data.preserved)
       content = (
         <input

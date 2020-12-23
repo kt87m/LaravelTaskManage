@@ -21,5 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('/tasks', TaskController::class)->middleware('project');
-Route::apiResource('/projects', ProjectController::class)->middleware('project');
+Route::apiResource('tasks', TaskController::class)->middleware('project');
+Route::apiResource('projects', ProjectController::class)->parameters([
+    'projects' => 'project_id',
+])->middleware('project');
