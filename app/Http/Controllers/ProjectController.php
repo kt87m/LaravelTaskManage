@@ -34,8 +34,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show(Request $request)
     {
+        $project = Project::find($request->project_id);
         return $project;
     }
 
@@ -43,11 +44,11 @@ class ProjectController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(Request $request)
     {
+        $project = Project::find($request->project_id);
         $project->fill(
             $request->all()
         )->save();
