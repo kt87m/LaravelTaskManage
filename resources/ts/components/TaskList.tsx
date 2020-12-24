@@ -35,7 +35,7 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
               search: location.search,
               state: { fromTop: true },
             }}
-            className="linkToDetail flex items-center p-3 transition-all duration-100 hover:bg-blue-100"
+            className="linkToDetail flex items-center p-3 transition-all duration-100 hover:bg-blue-100 outline-none focus:bg-blue-100"
           >
             {task.title || (
               <span className="text-gray-500">名称未設定タスク</span>
