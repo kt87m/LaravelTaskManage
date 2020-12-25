@@ -2,8 +2,24 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { useResource } from '../hooks/useResource';
-import { GoPlus } from 'react-icons/go';
-import { GoCloudUpload } from 'react-icons/go';
+import { GoPlus, GoCloudUpload } from 'react-icons/go';
+import { BsQuestion } from 'react-icons/bs';
+import { Tooltip } from '@material-ui/core';
+
+const PreserveProjectButton: React.FC<{
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  className?: string;
+}> = ({ onClick, className }) => (
+  <button
+    onClick={onClick}
+    className={`preserveProject items-center self-center py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow ${
+      className ?? ''
+    }`}
+  >
+    <GoCloudUpload className="text-lg mr-1" />
+    プロジェクトを保存する
+  </button>
+);
 
 const InfoArea: React.FC = () => {
   const location = useLocation();
@@ -40,6 +56,7 @@ const InfoArea: React.FC = () => {
         <input
           key={projectId}
           placeholder="プロジェクト名を入力"
+          autoFocus
           defaultValue={project.data.name}
           onChange={onChangeProjectName}
           className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300 text-sm sm:text-base"
@@ -48,14 +65,35 @@ const InfoArea: React.FC = () => {
     else
       content = (
         <>
-          <p className="self-center">未保存のプロジェクト</p>
-          <button
-            onClick={onClickPreserveProject}
-            className="preserveProject flex items-center self-center ml-8 py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow"
+          <p className="self-center text-sm sm:text-base">
+            未保存のプロジェクト
+          </p>
+          <Tooltip
+            interactive
+            arrow
+            title={
+              <div className="text-center text-xs sm:p-1">
+                <p>
+                  未保存のプロジェクトは
+                  <br />
+                  最終アクセスから1時間後に削除されます
+                </p>
+                <PreserveProjectButton
+                  onClick={onClickPreserveProject}
+                  className="flex sm:hidden mt-1 mx-auto"
+                />
+              </div>
+            }
           >
-            <GoCloudUpload className="text-lg mr-1" />
-            プロジェクトを保存する
-          </button>
+            <span>
+              <BsQuestion className="mx-1 align-middle rounded-full text-base sm:text-lg text-white bg-gray-600" />
+            </span>
+          </Tooltip>
+
+          <PreserveProjectButton
+            onClick={onClickPreserveProject}
+            className="hidden sm:flex ml-6"
+          />
         </>
       );
   }
