@@ -9,7 +9,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <InfoArea />
-      <div className="container mx-auto p-5 md:py-10 md:px-0">
+      <div className="container mx-auto p-3 sm:p-5 md:py-10 md:px-0">
         <Switch>
           <Route path="/tasks/:id">
             <TaskDetail />

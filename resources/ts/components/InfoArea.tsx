@@ -42,7 +42,7 @@ const InfoArea: React.FC = () => {
           placeholder="プロジェクト名を入力"
           defaultValue={project.data.name}
           onChange={onChangeProjectName}
-          className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300"
+          className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300 text-sm sm:text-base"
         />
       );
     else
@@ -61,16 +61,16 @@ const InfoArea: React.FC = () => {
   }
 
   return (
-    <div className="InfoArea bg-gray-200">
+    <div className="InfoArea pl-3 sm:pl-5 md:pl-0 bg-gray-200 text-xs md:text-base">
       <div className="container mx-auto">
-        <div className="flex h-12 text-gray-600">
+        <div className="flex items-center h-12 text-gray-600">
           {content}
           {projectId && (
             <Link
               to="/"
-              className="flex ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
+              className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
             >
-              <GoPlus className="mr-1 self-center text-xl" />
+              <GoPlus className="mr-1 self-center text-lg sm:text-xl" />
               新規プロジェクト
             </Link>
           )}

@@ -49,9 +49,9 @@ const TaskDetail: React.FC = () => {
         <button
           type="button"
           onClick={onClickDeleteTask}
-          className="deleteTask flex items-center ml-8 py-1 px-2 rounded-sm bg-red-500 text-white"
+          className="deleteTask flex items-center ml-3 sm:ml-8 py-1 px-2 rounded-sm text-xs sm:text-base bg-red-500 text-white"
         >
-          <AiTwotoneDelete className="mr-1 text-xl" />
+          <AiTwotoneDelete className="mr-1 sm:text-xl" />
           削除
         </button>
       </div>

@@ -47,19 +47,19 @@ const Top: React.FC = () => {
 
   return (
     <div className="relative">
-      <h2 className="text-2xl mb-3 text-gray-500">タスク一覧</h2>
+      <h2 className="text-xl md:text-2xl mb-3 text-gray-500">タスク一覧</h2>
 
       <div className="absolute top-0 right-0">
         <label>
           <FaFilter
             title="フィルター"
-            className="inline align-middle text-xl text-gray-500"
+            className="inline align-middle text-lg sm:text-xl text-gray-500"
           />
           <select
             data-testid="filter"
             value={filter}
             onChange={onChangeFilter}
-            className="ml-1 p-1 outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300"
+            className="ml-1 p-1 text-sm sm:text-base outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300"
           >
             <option value="">全て</option>
             <option value="done=true">完了済み</option>
