@@ -108,7 +108,7 @@ const InfoArea: React.FC = () => {
               to="/"
               className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
             >
-              <GoPlus className="mr-1 self-center text-lg sm:text-xl" />
+              <GoPlus className="mr-1 text-base sm:text-xl" />
               新規プロジェクト
             </Link>
           )}

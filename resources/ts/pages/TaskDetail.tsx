@@ -38,6 +38,7 @@ const TaskDetail: React.FC = () => {
   return (
     <div>
       <div className="flex items-center">
+        <Checkbox checked={task.data.done} onChange={onToggleCheck} />
         <h1 className="taskTitle flex-grow">
           <input
             defaultValue={task.data.title}
@@ -45,7 +46,6 @@ const TaskDetail: React.FC = () => {
             className="w-full p-1 border-gray-400 border-solid border rounded-sm"
           />
         </h1>
-        <Checkbox checked={task.data.done} onChange={onToggleCheck} />
         <button
           type="button"
           onClick={onClickDeleteTask}

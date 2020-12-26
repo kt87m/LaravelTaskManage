@@ -12,6 +12,8 @@ module.exports = {
   variants: {
     backgroundColor: ['hover', 'group-hover', 'checked', 'focus', 'focus-checked'],
     borderColor: ['hover', 'checked', 'focus'],
+    textColor: ['focus', 'focus-within'],
+    boxShadow: ['hover', 'group-hover'],
   },
   plugins: [
     plugin(function({ addVariant, e }) {

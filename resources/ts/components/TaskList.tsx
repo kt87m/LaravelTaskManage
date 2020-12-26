@@ -27,23 +27,23 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
         <li
           key={task.id}
           data-task-id={task.id}
-          className="border-b-2 border-gray-200"
+          className="flex pl-3 border-b-2 border-gray-200 duration-100 hover:bg-blue-100"
         >
+          <Checkbox
+            checked={task.done}
+            onChange={(e) => onToggleCheck(e, task.id)}
+          />
           <Link
             to={{
               pathname: `/tasks/${task.id}`,
               search: location.search,
               state: { fromTop: true },
             }}
-            className="linkToDetail flex items-center p-3 transition-all duration-100 hover:bg-blue-100 outline-none focus:bg-blue-100"
+            className={`linkToDetail group flex items-center flex-grow p-3 pl-0 outline-none ${
+              task.title ? '' : 'text-gray-500'
+            } focus:text-blue-500`}
           >
-            {task.title || (
-              <span className="text-gray-500">名称未設定タスク</span>
-            )}
-            <Checkbox
-              checked={task.done}
-              onChange={(e) => onToggleCheck(e, task.id)}
-            />
+            {task.title || '名称未設定タスク'}
           </Link>
         </li>
       ))}
