@@ -12,7 +12,7 @@ module.exports = {
   variants: {
     backgroundColor: ['hover', 'group-hover', 'checked', 'focus', 'focus-checked'],
     borderColor: ['hover', 'checked', 'focus'],
-    textColor: ['focus', 'focus-within'],
+    textColor: ['hover', 'focus', 'focus-within'],
     boxShadow: ['hover', 'group-hover'],
   },
   plugins: [
