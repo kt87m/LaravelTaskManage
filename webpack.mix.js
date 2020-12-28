@@ -2,6 +2,11 @@ const mix = require('laravel-mix');
 
 const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
+const os = require('os');
+const getLocalExternalIP = () => [].concat(...Object.values(os.networkInterfaces()))
+  .find((details) => details.family === 'IPv4' && !details.internal)
+  .address
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -18,9 +23,16 @@ const isDevelopment = !mix.inProduction();
 mix.postCss('resources/css/style.css', 'public/css', [
     require('tailwindcss'),
   ])
+  .options({
+    hmrOptions: {
+      host: getLocalExternalIP(),
+      port: 8080,
+    }
+  })
   .webpackConfig({
     devtool: 'inline-source-map',
     devServer: {
+      host: '0.0.0.0',
       proxy: {
         '*': 'http://localhost:8000'
       }
