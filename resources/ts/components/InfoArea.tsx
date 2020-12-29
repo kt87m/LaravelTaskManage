@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { useResource } from '../hooks/useResource';
 import { GoPlus, GoCloudUpload } from 'react-icons/go';
 import { BsQuestion } from 'react-icons/bs';
-import { Tooltip } from '@material-ui/core';
+import { ClickAwayListener, Tooltip } from '@material-ui/core';
 
 const PreserveProjectButton: React.FC<{
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -40,6 +40,8 @@ const InfoArea: React.FC = () => {
     });
   };
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   let content;
   if (!projectId)
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
@@ -68,27 +70,35 @@ const InfoArea: React.FC = () => {
           <p className="self-center text-sm sm:text-base">
             未保存のプロジェクト
           </p>
-          <Tooltip
-            interactive
-            arrow
-            title={
-              <div className="text-center text-xs sm:p-1">
-                <p>
-                  未保存のプロジェクトは
-                  <br />
-                  最終アクセスから1時間後に削除されます
-                </p>
-                <PreserveProjectButton
-                  onClick={onClickPreserveProject}
-                  className="flex sm:hidden mt-1 mx-auto"
-                />
-              </div>
-            }
-          >
-            <span>
-              <BsQuestion className="mx-1 align-middle rounded-full text-base sm:text-lg text-white bg-gray-600" />
-            </span>
-          </Tooltip>
+
+          <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
+            <Tooltip
+              interactive
+              arrow
+              open={tooltipOpen}
+              title={
+                <div className="text-center text-xs p-1">
+                  <p>
+                    未保存のプロジェクトは
+                    <br />
+                    最終アクセスから1時間後に削除されます
+                  </p>
+                  <PreserveProjectButton
+                    onClick={onClickPreserveProject}
+                    className="flex sm:hidden mt-1 mx-auto"
+                  />
+                </div>
+              }
+            >
+              <span
+                onClick={() => setTooltipOpen(true)}
+                onMouseEnter={() => setTooltipOpen(true)}
+                onMouseLeave={() => setTooltipOpen(false)}
+              >
+                <BsQuestion className="mx-1 align-middle rounded-full text-base sm:text-lg text-white bg-gray-600" />
+              </span>
+            </Tooltip>
+          </ClickAwayListener>
 
           <PreserveProjectButton
             onClick={onClickPreserveProject}
