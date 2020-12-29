@@ -59,7 +59,7 @@ const InfoArea: React.FC = () => {
           autoFocus
           defaultValue={project.data.name}
           onChange={onChangeProjectName}
-          className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300 text-sm sm:text-base"
+          className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300 text-base rounded-none"
         />
       );
     else

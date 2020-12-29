@@ -59,7 +59,7 @@ const Top: React.FC = () => {
             data-testid="filter"
             value={filter}
             onChange={onChangeFilter}
-            className="ml-1 p-1 text-sm sm:text-base outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300"
+            className="appearance-none ml-1 p-1 text-base outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300 rounded-none"
           >
             <option value="">全て</option>
             <option value="done=true">完了済み</option>
