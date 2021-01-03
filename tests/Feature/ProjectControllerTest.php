@@ -34,7 +34,37 @@ class ProjectControllerTest extends TestCase
     }
 
     /**
-     * Get temporary project by id.
+     * Get project data including tasks.
+     *
+     * @return void
+     */
+    public function testGetSpecifiedProjectWithTasks()
+    {
+        $response = $this->get(route('projects.show', $this->project->id));
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'tasks' => [],
+            ]);
+
+        $task1 = [
+            'project_id' => $this->project->id,
+            'title' => 'test title',
+        ];
+        $task2 = [
+            'project_id' => $this->project->id,
+            'title' => 'test title2',
+        ];
+        $this->post(route('tasks.store'), $task1);
+        $this->post(route('tasks.store'), $task2);
+        
+        $response = $this->get(route('projects.show', $this->project->id));
+        $response->assertStatus(200)
+            ->assertJsonFragment($task1)
+            ->assertJsonFragment($task2);
+    }
+
+    /**
+     * Convert temporary project to permanent project.
      *
      * @return void
      */
