@@ -36,7 +36,7 @@ class ProjectController extends Controller
      */
     public function show(Request $request)
     {
-        $project = Project::find($request->project_id);
+        $project = Project::with('tasks')->find($request->project_id);
         return $project;
     }
 
