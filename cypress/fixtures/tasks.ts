@@ -1,14 +1,19 @@
-import { Resources } from '../../resources/ts/types/api';
+import { Project, Task } from '../../resources/ts/types/api';
 
-export let task1: Resources['tasks'];
-export let task2: Resources['tasks'];
+export let project: Project;
+export let task1: Task;
+export let task2: Task;
 export let queryString: string;
-export function setupDb(): Cypress.Chainable<Resources['tasks'][]> {
-  cy.refreshDatabase().seed('TaskSeeder');
 
-  return cy.php<typeof task1[]>(`App\\Models\\Task::all();`).then((ts) => {
-    [task1, task2] = ts;
-    queryString = `?project_id=${task1.project_id}`;
-    return ts;
-  });
+export function setupDb(): Cypress.Chainable<Project> {
+  return cy
+    .refreshDatabase()
+    .seed('TaskSeeder')
+    .php<Project>(`App\\Models\\Project::with('tasks')->first();`)
+    .then((prj) => {
+      [task1, task2] = prj.tasks;
+      queryString = `?project_id=${prj.id}`;
+      project = prj;
+      return prj;
+    });
 }
