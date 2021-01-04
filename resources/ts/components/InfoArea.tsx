@@ -25,7 +25,10 @@ const InfoArea: React.FC = () => {
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
-  const projectId = searchParams.get('project_id') || '';
+  const projectParamMatch = /^\/projects\/([^/?]+)/.exec(location.pathname);
+  const projectId = projectParamMatch
+    ? projectParamMatch[1]
+    : searchParams.get('project_id') || '';
   const project = useResource('projects').get(projectId);
 
   const onClickPreserveProject = () => {
