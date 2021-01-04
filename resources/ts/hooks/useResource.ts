@@ -100,7 +100,7 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 }
 
-class RESTResource<T extends keyof Resources> {
+export class RESTResource<T extends keyof Resources> {
   public readonly error?: AxiosError<ApiError>;
   public readonly data?: Resources[T];
 

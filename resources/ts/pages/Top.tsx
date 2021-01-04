@@ -4,13 +4,17 @@ import { FaFilter } from 'react-icons/fa';
 import { useHistory, useLocation } from 'react-router-dom';
 import TaskList from '../components/TaskList';
 import { useResource } from '../hooks/useResource';
+import { Task } from '../types/api';
 
-const Top: React.FC = () => {
+type Props = {
+  tasks?: Task[];
+};
+
+const Top: React.FC<Props> = ({ tasks }) => {
   const history = useHistory();
   const location = useLocation();
 
   const taskAccess = useResource('tasks');
-  const tasks = taskAccess.index();
 
   const searchParams = new URLSearchParams(location.search);
   const filter = (/done=[^&]+/.exec(location.search) ?? [''])[0];

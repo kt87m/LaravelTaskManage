@@ -1,36 +1,16 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
-import { useResource } from '../hooks/useResource';
+import { RESTResource } from '../hooks/useResource';
 import { GoPlus, GoCloudUpload } from 'react-icons/go';
 import { BsQuestion } from 'react-icons/bs';
 import { ClickAwayListener, Tooltip } from '@material-ui/core';
 
-const PreserveProjectButton: React.FC<{
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  className?: string;
-}> = ({ onClick, className }) => (
-  <button
-    onClick={onClick}
-    className={`preserveProject items-center self-center py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow ${
-      className ?? ''
-    }`}
-  >
-    <GoCloudUpload className="text-lg mr-1" />
-    プロジェクトを保存する
-  </button>
-);
+type Props = {
+  project: RESTResource<'projects'>;
+};
 
-const InfoArea: React.FC = () => {
-  const location = useLocation();
-
-  const searchParams = new URLSearchParams(location.search);
-  const projectParamMatch = /^\/projects\/([^/?]+)/.exec(location.pathname);
-  const projectId = projectParamMatch
-    ? projectParamMatch[1]
-    : searchParams.get('project_id') || '';
-  const project = useResource('projects').get(projectId);
-
+const InfoArea: React.FC<Props> = ({ project }) => {
   const onClickPreserveProject = () => {
     project.update({ preserved: true }).catch(console.log);
   };
@@ -46,7 +26,7 @@ const InfoArea: React.FC = () => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   let content;
-  if (!projectId)
+  if (!project.data)
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
   else if (project.error?.response) {
     const errors = project.error.response.data.errors;
@@ -59,7 +39,7 @@ const InfoArea: React.FC = () => {
     if (project.data.preserved)
       content = (
         <input
-          key={projectId}
+          key={project.data.id}
           placeholder="プロジェクト名を入力"
           autoFocus
           defaultValue={project.data.name}
@@ -116,7 +96,7 @@ const InfoArea: React.FC = () => {
       <div className="container mx-auto">
         <div className="flex items-center h-12 text-gray-600">
           {content}
-          {projectId && (
+          {project.data && (
             <Link
               to="/"
               className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
@@ -132,3 +112,18 @@ const InfoArea: React.FC = () => {
 };
 
 export default InfoArea;
+
+const PreserveProjectButton: React.FC<{
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  className?: string;
+}> = ({ onClick, className }) => (
+  <button
+    onClick={onClick}
+    className={`preserveProject items-center self-center py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow ${
+      className ?? ''
+    }`}
+  >
+    <GoCloudUpload className="text-lg mr-1" />
+    プロジェクトを保存する
+  </button>
+);

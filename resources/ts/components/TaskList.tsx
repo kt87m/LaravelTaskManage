@@ -1,16 +1,11 @@
-import { AxiosError } from 'axios';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { ApiError, Task } from '../types/api';
+import { Task } from '../types/api';
 import { Checkbox } from './Checkbox';
-import { Errors } from './Errors';
 
 type Props = {
-  tasks: {
-    error: AxiosError<ApiError> | undefined;
-    data: Task[] | undefined;
-  };
+  tasks?: Task[];
   onToggleCheck(
     e: React.ChangeEvent<HTMLInputElement>,
     id: number | string
@@ -18,12 +13,11 @@ type Props = {
 };
 
 const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
-  if (tasks.error?.response) return <Errors error={tasks.error} />;
-  if (!tasks.data) return <p>loading...</p>;
+  if (!tasks) return <p>loading...</p>;
 
   return (
     <ul>
-      {tasks.data.map((task) => (
+      {tasks.map((task) => (
         <li
           key={task.id}
           data-task-id={task.id}
