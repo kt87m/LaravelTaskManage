@@ -13,7 +13,7 @@ type Props = {
 };
 
 const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
-  if (!tasks) return <p>loading...</p>;
+  if (!tasks) return null;
 
   return (
     <ul>
@@ -29,8 +29,7 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
           />
           <Link
             to={{
-              pathname: `/tasks/${task.id}`,
-              search: location.search,
+              pathname: `/projects/${task.project_id}/tasks/${task.id}`,
               state: { fromTop: true },
             }}
             className={`linkToDetail group flex items-center flex-grow p-3 pl-0 outline-none ${
