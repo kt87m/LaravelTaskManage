@@ -1,7 +1,13 @@
 /// <reference types="cypress" />
 
 import { Resources } from '../../resources/ts/types/api';
-import { task1, task2, queryString, project, setupDb } from '../fixtures/tasks';
+import {
+  task1,
+  task2,
+  queryString,
+  project,
+  setupDb,
+} from '../fixtures/serverResource';
 
 context('project', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { task1, task2, queryString, setupDb } from '../fixtures/tasks';
+import { task1, task2, queryString, setupDb } from '../fixtures/serverResource';
 
 context('top page', () => {
   beforeEach(() => {
