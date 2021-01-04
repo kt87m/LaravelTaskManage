@@ -21,8 +21,8 @@ const App: React.FC = () => {
       <InfoArea project={project} />
       <div className="container mx-auto p-3 sm:p-5 md:py-10 md:px-0">
         <Switch>
-          <Route path={`/projects/${project.id}/tasks/:id`}>
-            <TaskDetail />
+          <Route path={`/projects/:projectId/tasks/:id`}>
+            <TaskDetail tasks={project.data?.tasks} />
           </Route>
           <Route path="/">
             <Top tasks={project.data?.tasks} />
