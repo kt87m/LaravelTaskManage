@@ -1,13 +1,11 @@
 declare const expect: jest.Expect; // cypressとの競合回避  TODO: マシな回避策探す
+import { renderHook } from '@testing-library/react-hooks';
 
 import { useResource } from '../hooks/useResource';
 
-const mockSWR = jest.fn((key: string) => key);
-
-jest.mock('swr', () => ({
-  __esModule: true,
-  default: (key: string) => mockSWR(key),
-}));
+jest.mock('axios');
+import axios from 'axios';
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('tasks', () => {
   afterEach(() => {
@@ -15,8 +13,7 @@ describe('tasks', () => {
   });
 
   it('call api with passed id', () => {
-    const tasksAccess = useResource('tasks');
-    tasksAccess.get(24);
-    expect(mockSWR.mock.calls[0][0]).toMatch(/24$/);
+    renderHook(() => useResource('tasks').get(24));
+    expect(mockedAxios.get.mock.calls[0][0]).toMatch(/24$/);
   });
 });
