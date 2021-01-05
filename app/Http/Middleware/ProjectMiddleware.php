@@ -46,13 +46,12 @@ class ProjectMiddleware
     private function validateProjectId()
     {
         $routeName = request()->route()->getName();
-        return Validator::make(request()->all(),
+        return Validator::make(
+            ['project_id' => request()->project_id],
             [
                 'project_id' => [
                     Rule::requiredIf(!(
-                        $routeName === 'tasks.index'
-                        || $routeName === 'tasks.store'
-                        || preg_match('/^projects\./', $routeName)
+                        $routeName === 'tasks.store'
                     )),
                     'uuid',
                     'exists:projects,id',

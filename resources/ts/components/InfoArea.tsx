@@ -7,28 +7,28 @@ import { BsQuestion } from 'react-icons/bs';
 import { ClickAwayListener, Tooltip } from '@material-ui/core';
 
 type Props = {
-  project: RESTResource<'projects'>;
+  project: RESTResource<'projects'> | null;
 };
 
 const InfoArea: React.FC<Props> = ({ project }) => {
   const onClickPreserveProject = () => {
-    project.update({ preserved: true }).catch(console.log);
+    project!.update({ preserved: true }).catch(console.log);
   };
 
   const changeProjectNameBuffer = useCallbackBuffer();
   const onChangeProjectName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     changeProjectNameBuffer(() => {
-      project.update({ name }).catch(console.log);
+      project!.update({ name }).catch(console.log);
     });
   };
 
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   let content;
-  if (!project.data)
+  if (project === null) {
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
-  else if (project.error?.response) {
+  } else if (project.error?.response) {
     const errors = project.error.response.data.errors;
     content = (
       <p className="self-center text-red-600">
@@ -36,10 +36,9 @@ const InfoArea: React.FC<Props> = ({ project }) => {
       </p>
     );
   } else if (project.data) {
-    if (project.data.preserved)
+    if (project.data.preserved) {
       content = (
         <input
-          key={project.data.id}
           placeholder="プロジェクト名を入力"
           autoFocus
           defaultValue={project.data.name}
@@ -47,7 +46,7 @@ const InfoArea: React.FC<Props> = ({ project }) => {
           className="projectName self-center bg-transparent border-b-2 border-transparent focus:outline-none focus:border-blue-300 text-base rounded-none"
         />
       );
-    else
+    } else {
       content = (
         <>
           <p className="self-center text-sm sm:text-base">
@@ -89,14 +88,18 @@ const InfoArea: React.FC<Props> = ({ project }) => {
           />
         </>
       );
+    }
   }
 
   return (
-    <div className="InfoArea pl-3 sm:pl-5 md:pl-0 bg-gray-200 text-xs md:text-base">
+    <div
+      key={project?.id}
+      className="InfoArea pl-3 sm:pl-5 md:pl-0 bg-gray-200 text-xs md:text-base"
+    >
       <div className="container mx-auto">
         <div className="flex items-center h-12 text-gray-600">
           {content}
-          {project.data && (
+          {(project?.data || project?.error) && (
             <Link
               to="/"
               className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"

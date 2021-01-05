@@ -9,12 +9,11 @@ import InfoArea from './InfoArea';
 const App: React.FC = () => {
   const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
   const projectParamMatch = /^\/projects\/([^/?]+)/.exec(location.pathname);
-  const projectId = projectParamMatch
-    ? projectParamMatch[1]
-    : searchParams.get('project_id') || '';
-  const project = useResource('projects').get(projectId);
+  const projectId = projectParamMatch ? projectParamMatch[1] : '';
+  const project =
+    location.pathname === '/' ? null : useResource('projects').get(projectId);
+  const tasks = project?.data?.tasks || [];
 
   return (
     <>
@@ -22,10 +21,10 @@ const App: React.FC = () => {
       <div className="container mx-auto p-3 sm:p-5 md:py-10 md:px-0">
         <Switch>
           <Route path={`/projects/:projectId/tasks/:id`}>
-            <TaskDetail tasks={project.data?.tasks} />
+            <TaskDetail tasks={tasks} />
           </Route>
           <Route path="/">
-            <Top tasks={project.data?.tasks} />
+            <Top tasks={tasks} />
           </Route>
         </Switch>
       </div>
