@@ -50,8 +50,10 @@ class ProjectMiddleware
             ['project_id' => request()->project_id],
             [
                 'project_id' => [
+                    'nullable',
                     Rule::requiredIf(!(
-                        $routeName === 'tasks.store'
+                        $routeName === 'tasks.index'
+                        || $routeName === 'tasks.store'
                     )),
                     'uuid',
                     'exists:projects,id',
