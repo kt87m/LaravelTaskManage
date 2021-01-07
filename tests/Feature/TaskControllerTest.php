@@ -45,17 +45,25 @@ class TaskControllerTest extends TestCase
     }
 
     /**
+     * プロジェクトId無しでアクセスすると空配列を返す
+     *
+     * @return void
+     */
+    public function testAccessIndexWithoutProjectId()
+    {
+        $response = $this->get(route('tasks.index'));
+        logger()->debug($response->original);
+        $response->assertStatus(200)
+            ->assertJson([]);
+    }
+
+    /**
      * プロジェクト内全件取得
      *
      * @return void
      */
     public function testGetAllTasksOfSpecifiedProject()
     {
-        // project_id無しなら空配列を返す
-        $response = $this->get(route('tasks.index'));
-        $response->assertStatus(200)
-            ->assertJson([]);
-
         // セットアップ済みのproject_idでGET
         $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
         $response->assertStatus(200)
@@ -76,12 +84,6 @@ class TaskControllerTest extends TestCase
             'done' => true,
         ]);
 
-        // セットアップ済みのプロジェクト/タスク取得
-        $response = $this->call('GET', route('tasks.index'), ['project_id' => $this->tasks[0]->project_id]);
-        $response->assertStatus(200)
-            ->assertJsonCount($this->initialTaskCount)
-            ->assertJsonFragment($this->tasks[0]->toArray());
-
         // 新規作成したプロジェクト/タスク取得
         $response = $this->call('GET', route('tasks.index'), ['project_id' => $newTask->project_id]);
         $response->assertStatus(200)
@@ -94,7 +96,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetTaskslWithInvalidProjectId()
+    public function testGetTasksWithInvalidProjectId()
     {
         $response = $this->call('GET', route('tasks.index'), ['project_id' => 'invalid_id']);
 
@@ -109,7 +111,7 @@ class TaskControllerTest extends TestCase
      *
      * @return void
      */
-    public function testGetTaskslWithProjectIdNotExists()
+    public function testGetTasksWithProjectIdNotExists()
     {
         $response = $this->call('GET', route('tasks.index'), ['project_id' => self::UUID_NOT_EXISTS]);
 
