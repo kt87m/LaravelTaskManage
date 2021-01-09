@@ -5,36 +5,31 @@ import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { AiTwotoneDelete } from 'react-icons/ai';
 
 import { useResource } from '../hooks/useResource';
-import { Task } from '../types/api';
+import { Errors } from '../components/Errors';
 
-type Props = {
-  tasks?: Task[];
-};
-
-const TaskDetail: React.FC<Props> = ({ tasks }) => {
+const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory<{ fromTop?: boolean } | undefined>();
 
-  const task = tasks?.find((task) => task.id == id);
-
-  const taskResource = useResource('tasks').get(id);
+  const task = useResource('tasks').get(id);
   const titleChangeBuffer = useCallbackBuffer();
 
-  if (!task) return null;
+  if (task.error?.response) return <Errors error={task.error} />;
+  if (!task.data) return <p>loading...</p>;
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
     titleChangeBuffer(() => {
-      void taskResource.update({ title });
+      void task.update({ title });
     });
   };
 
   const onToggleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    void taskResource.update({ done: e.target.checked });
+    void task.update({ done: e.target.checked });
   };
 
   const onClickDeleteTask = () => {
-    void taskResource.deleteSelf().then(() => {
+    void task.deleteSelf().then(() => {
       if (history.location.state?.fromTop) history.goBack();
       else history.replace(`/${location.search}`);
     });
@@ -43,10 +38,10 @@ const TaskDetail: React.FC<Props> = ({ tasks }) => {
   return (
     <div>
       <div className="flex items-center">
-        <Checkbox checked={task.done} onChange={onToggleCheck} />
+        <Checkbox checked={task.data.done} onChange={onToggleCheck} />
         <h1 className="taskTitle flex-grow">
           <input
-            defaultValue={task.title}
+            defaultValue={task.data.title}
             onChange={onTitleChange}
             className="w-full p-1 border-gray-400 border-solid border rounded-sm"
           />
