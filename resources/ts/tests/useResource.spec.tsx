@@ -3,13 +3,27 @@ import { renderHook } from '@testing-library/react-hooks';
 
 import { useResource } from '../hooks/useResource';
 
+jest.mock('swr');
+import _useSWR, { cache as _cache } from 'swr';
+const {
+  default: useSWR,
+  cache,
+}: { default: typeof _useSWR; cache: typeof _cache } = jest.requireActual(
+  'swr'
+);
+const mockedUseSWR = _useSWR as jest.MockedFunction<typeof _useSWR>;
+mockedUseSWR.mockImplementation((key, fn) => {
+  return useSWR(key, fn);
+});
+
 jest.mock('axios');
 import axios from 'axios';
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('tasks', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    cache.clear();
   });
 
   it('call api with passed id', () => {
