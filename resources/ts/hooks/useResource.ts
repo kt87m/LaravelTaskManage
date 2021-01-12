@@ -16,26 +16,34 @@ class RESTResourceAccess<T extends keyof Resources> {
   }
 
   index() {
+    const key = this.getKeyFromPath();
     const { error, data } = useSWR<Array<Resources[T]>, AxiosError<ApiError>>(
-      this.uri + location.search,
-      (uri) => {
+      key,
+      () => {
         return axios
-          .get<Resources[T][], AxiosResponse<Resources[T][]>>(uri)
-          .then((res) => res.data);
+          .get<Resources[T][], AxiosResponse<Resources[T][]>>(
+            `/api${key}${location.search}`
+          )
+          .then(({ data }) => data);
       }
     );
+
+    const prevSearch = search;
+    search = location.search;
+    if (search !== prevSearch) void mutate(key);
+
     return { error, data };
   }
 
   get(id: Id): RESTResource<T> {
-    const response = useSWR<Resources[T], AxiosError<ApiError>>(
-      `${this.uri}/${id}${location.search}`,
-      (uri) => {
-        return axios
-          .get<Resources[T], AxiosResponse<Resources[T]>>(uri)
-          .then((res) => res.data);
-      }
-    );
+    const key = this.getKeyFromPath(id);
+    const response = useSWR<Resources[T], AxiosError<ApiError>>(key, () => {
+      return axios
+        .get<Resources[T], AxiosResponse<Resources[T]>>(
+          `/api${key}${location.search}`
+        )
+        .then((res) => res.data);
+    });
     return new RESTResource(this, id, response);
   }
 
@@ -43,22 +51,24 @@ class RESTResourceAccess<T extends keyof Resources> {
     data: Partial<Omit<Resources[T], keyof ResourceBase>>,
     onSuccess?: (res: Resources[T]) => void
   ) {
+    const key = this.getKeyFromPath();
     return axios
       .post<Resources[T], AxiosResponse<Resources[T]>>(
-        this.uri + location.search,
+        `/api${key}${location.search}`,
         data
       )
       .then((res) => {
         if (onSuccess) onSuccess(res.data);
-        void mutate(this.uri + location.search);
+        void mutate(key);
         return res;
       });
   }
 
   update(id: Id, diff: Partial<Omit<Resources[T], keyof ResourceBase>>) {
     // 集合キャッシュ
+    const collectionKey = this.getKeyFromPath();
     void mutate(
-      this.uri + location.search,
+      collectionKey,
       (data?: Resources[T][]) => {
         if (!data) return;
         return data.map((item) =>
@@ -69,22 +79,22 @@ class RESTResourceAccess<T extends keyof Resources> {
     );
 
     // 個別キャッシュ
-    const uri = `${this.uri}/${id}${location.search}`;
-    void mutate(uri, (data: Resources[T]) => ({ ...data, ...diff }), false);
+    const key = `${collectionKey}/${id}`;
+    void mutate(key, (data: Resources[T]) => ({ ...data, ...diff }), false);
 
     return axios
-      .put<Resources[T]>(uri, diff)
-      .then((res) => mutate(uri, res.data, false))
+      .put<Resources[T]>(`/api${key}${location.search}`, diff)
       .catch((e) => {
         console.log(e);
-        void mutate(this.uri + location.search);
-        void mutate(uri);
+        void mutate(collectionKey);
+        void mutate(key);
       });
   }
 
   delete(id: Id) {
+    const collectionKey = this.getKeyFromPath();
     void mutate(
-      this.uri + location.search,
+      collectionKey,
       (data?: Resources[T][]) => {
         if (!data) return;
         return data.filter((item) => item.id != id);
@@ -92,11 +102,22 @@ class RESTResourceAccess<T extends keyof Resources> {
       false
     );
 
-    const uri = `${this.uri}/${id}${location.search}`;
-    return axios.delete(uri).catch((e) => {
+    const key = `${collectionKey}/${id}`;
+    void mutate(key, undefined, false);
+
+    return axios.delete(`/api/${key}${location.search}`).catch((e) => {
       console.log(e);
-      void mutate(this.uri + location.search);
+      void mutate(collectionKey);
     });
+  }
+
+  private getKeyFromPath(id?: Id) {
+    if (!id) {
+      const match = new RegExp(`^.*/${this.type}`).exec(location.pathname);
+      return match ? match[0] : `${location.pathname}/${this.type}`;
+    }
+    const match = new RegExp(`^.*/${this.type}/${id}`).exec(location.pathname);
+    return match ? match[0] : `/${this.type}/${id}`;
   }
 }
 
@@ -121,3 +142,5 @@ export class RESTResource<T extends keyof Resources> {
     return this.parent.delete(this.id);
   }
 }
+
+let search = location.search;
