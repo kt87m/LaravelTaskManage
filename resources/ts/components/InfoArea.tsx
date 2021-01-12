@@ -24,11 +24,8 @@ const PreserveProjectButton: React.FC<{
 const InfoArea: React.FC = () => {
   const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
   const projectParamMatch = /^\/projects\/([^/?]+)/.exec(location.pathname);
-  const projectId = projectParamMatch
-    ? projectParamMatch[1]
-    : searchParams.get('project_id') || '';
+  const projectId = projectParamMatch ? projectParamMatch[1] : '';
   const project = useResource('projects').get(projectId);
 
   const onClickPreserveProject = () => {
