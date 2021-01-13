@@ -98,16 +98,15 @@ const InfoArea: React.FC = () => {
       <div className="container mx-auto">
         <div className="flex items-center h-12 text-gray-600">
           {content}
-          {!!projectId ||
-            (project.error && (
-              <Link
-                to="/"
-                className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
-              >
-                <GoPlus className="mr-1 text-base sm:text-xl" />
-                新規プロジェクト
-              </Link>
-            ))}
+          {(projectId || (project.error && location.pathname !== '/')) && (
+            <Link
+              to="/"
+              className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
+            >
+              <GoPlus className="mr-1 text-base sm:text-xl" />
+              新規プロジェクト
+            </Link>
+          )}
         </div>
       </div>
     </div>
