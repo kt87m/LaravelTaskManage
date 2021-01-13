@@ -27,7 +27,7 @@ context('task detail page', () => {
     setupDb();
   });
 
-  it('require "project_id" param', () => {
+  it('require project id in path', () => {
     cy.visit(`/tasks/${task1.id}`)
       .wait(1000)
       .contains('URLにプロジェクトIDが含まれていません');
