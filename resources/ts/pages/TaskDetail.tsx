@@ -31,7 +31,7 @@ const TaskDetail: React.FC = () => {
   const onClickDeleteTask = () => {
     void task.deleteSelf().then(() => {
       if (history.location.state?.fromTop) history.goBack();
-      else history.replace(`/${location.search}`);
+      else task.data && history.replace(`/projects/${task.data.project_id}`);
     });
   };
 
