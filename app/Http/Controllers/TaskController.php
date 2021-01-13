@@ -14,7 +14,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $project_id = $request->input('project_id');
+        $project_id = $request->route('project_id');
         if (!$project_id) return [];
 
         return Task::where('project_id', $project_id)
@@ -38,7 +38,7 @@ class TaskController extends Controller
         ]);
 
         return Task::create([
-            'project_id' => $request->project_id,
+            'project_id' => $request->route('project_id'),
             'title' => $request->title ?? '',
             'done' => false,
         ]);
@@ -51,11 +51,9 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, int $id)
+    public function show(Request $request, string $project_id, int $task_id)
     {
-        $project_id = $request->input('project_id');
-        
-        $task = Task::where('project_id', $project_id)->find($id);
+        $task = Task::where('project_id', $project_id)->find($task_id);
 
         if (!$task)
             return response()->apiError([
@@ -72,7 +70,7 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Task $task)
+    public function update(Request $request, string $project_id, Task $task)
     {
         if ($task == null) {
             abort(404);
@@ -100,7 +98,7 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Task $task)
+    public function destroy(Request $request, string $project_id, Task $task)
     {
         Task::destroy($task->id);
     }

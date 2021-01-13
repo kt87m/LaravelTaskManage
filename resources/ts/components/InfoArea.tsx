@@ -6,26 +6,11 @@ import { GoPlus, GoCloudUpload } from 'react-icons/go';
 import { BsQuestion } from 'react-icons/bs';
 import { ClickAwayListener, Tooltip } from '@material-ui/core';
 
-const PreserveProjectButton: React.FC<{
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  className?: string;
-}> = ({ onClick, className }) => (
-  <button
-    onClick={onClick}
-    className={`preserveProject items-center self-center py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow ${
-      className ?? ''
-    }`}
-  >
-    <GoCloudUpload className="text-lg mr-1" />
-    プロジェクトを保存する
-  </button>
-);
-
 const InfoArea: React.FC = () => {
   const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
-  const projectId = searchParams.get('project_id') || '';
+  const projectParamMatch = /^\/projects\/([^/?]+)/.exec(location.pathname);
+  const projectId = projectParamMatch ? projectParamMatch[1] : '';
   const project = useResource('projects').get(projectId);
 
   const onClickPreserveProject = () => {
@@ -43,7 +28,7 @@ const InfoArea: React.FC = () => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   let content;
-  if (!projectId)
+  if (location.pathname === '/')
     content = <p className="self-center">タスクを追加してプロジェクトを開始</p>;
   else if (project.error?.response) {
     const errors = project.error.response.data.errors;
@@ -113,15 +98,16 @@ const InfoArea: React.FC = () => {
       <div className="container mx-auto">
         <div className="flex items-center h-12 text-gray-600">
           {content}
-          {projectId && (
-            <Link
-              to="/"
-              className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
-            >
-              <GoPlus className="mr-1 text-base sm:text-xl" />
-              新規プロジェクト
-            </Link>
-          )}
+          {!!projectId ||
+            (project.error && (
+              <Link
+                to="/"
+                className="flex items-center ml-auto p-3 text-blue-500 focus:outline-none focus:bg-gray-300 hover:bg-gray-300 transition-all"
+              >
+                <GoPlus className="mr-1 text-base sm:text-xl" />
+                新規プロジェクト
+              </Link>
+            ))}
         </div>
       </div>
     </div>
@@ -129,3 +115,18 @@ const InfoArea: React.FC = () => {
 };
 
 export default InfoArea;
+
+const PreserveProjectButton: React.FC<{
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  className?: string;
+}> = ({ onClick, className }) => (
+  <button
+    onClick={onClick}
+    className={`preserveProject items-center self-center py-1 px-3 text-xs rounded-full duration-200 bg-teal-600  hover:bg-teal-500 text-white shadow ${
+      className ?? ''
+    }`}
+  >
+    <GoCloudUpload className="text-lg mr-1" />
+    プロジェクトを保存する
+  </button>
+);

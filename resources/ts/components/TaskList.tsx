@@ -35,7 +35,7 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
           />
           <Link
             to={{
-              pathname: `/tasks/${task.id}`,
+              pathname: `/projects/${task.project_id}/tasks/${task.id}`,
               search: location.search,
               state: { fromTop: true },
             }}

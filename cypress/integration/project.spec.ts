@@ -1,34 +1,36 @@
 /// <reference types="cypress" />
 
 import { Resources } from '../../resources/ts/types/api';
-import { /* task1, task2, */ queryString, setupDb } from '../fixtures/tasks';
+import { project, setupDb } from '../fixtures/serverResource';
 
 context('project', () => {
   beforeEach(() => {
     cy.refreshDatabase();
   });
 
-  it('show message to start project when access without "project_id" param', () => {
+  it('show message to start project when access without project id', () => {
     cy.visit('/').contains('タスクを追加してプロジェクトを開始');
   });
 
-  it('append project_id as search param when add task without "project_id" param', () => {
+  it('append project id as path when add task without project id in path', () => {
     cy.visit('/');
-    cy.location('search').should('equal', '');
     cy.get('.createTask').click();
     cy.wait(1000)
       .php<Resources['tasks']>(`App\\Models\\Task::first();`)
       .then((task) => {
-        cy.location('search').should('contains', task.project_id);
+        cy.location('pathname').should(
+          'contains',
+          `/projects/${task.project_id}`
+        );
       });
   });
 
-  it('display tasks of the project which specified by "project_id" params', () => {
+  it('display tasks of the project which specified by path', () => {
     const taskData = { title: 'テストタスク1', done: true };
     cy.create('App\\Models\\Task', 1, taskData);
 
     cy.php<Resources['tasks']>(`App\\Models\\Task::first();`).then((task) => {
-      cy.visit(`/?project_id=${task.project_id}`);
+      cy.visit(`/projects/${task.project_id}`);
       cy.get('li[data-task-id]').should(($li) => {
         expect($li).to.have.length(1);
         expect($li).contain(taskData.title);
@@ -45,13 +47,13 @@ context('Preserve project', () => {
     setupDb();
   });
 
-  it('show message that project is unpreserved and button to preserve when access with `project_id` param', () => {
-    cy.visit(`/${queryString}`).contains('未保存のプロジェクト');
+  it('show message that project is unpreserved and button to preserve when access with project id', () => {
+    cy.visit(`/projects/${project.id}`).contains('未保存のプロジェクト');
     cy.get('button.preserveProject');
   });
 
   it('show initial project name when project is preserved', () => {
-    cy.visit(`/${queryString}`);
+    cy.visit(`/projects/${project.id}`);
     cy.get('button.preserveProject').click();
     cy.wait(1000);
     cy.get('button.preserveProject').should('not.exist');

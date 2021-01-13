@@ -34,7 +34,7 @@ class ProjectControllerTest extends TestCase
     }
 
     /**
-     * Get temporary project by id.
+     * Convert temporary project to permanent project.
      *
      * @return void
      */

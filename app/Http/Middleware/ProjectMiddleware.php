@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Project;
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +27,7 @@ class ProjectMiddleware
         }
         
         $project = Project::find($request->project_id);
-        if ($project && $project->expiration < Carbon::now())
+        if ($project && $project->expiration < now())
             return response()->apiError([
                 'errors' => ['project_id' => ['プロジェクトが存在しません']],
             ], 404);
@@ -36,7 +35,7 @@ class ProjectMiddleware
         // extend project expiration
         if ($project && !$project->preserved) {
             $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
-            $project->expiration = Carbon::now("+$lifespan hour");
+            $project->expiration = now("+$lifespan hour");
             $project->save();
         }
 
@@ -46,13 +45,14 @@ class ProjectMiddleware
     private function validateProjectId()
     {
         $routeName = request()->route()->getName();
-        return Validator::make(request()->all(),
+        return Validator::make(
+            ['project_id' => request()->route('project_id')],
             [
                 'project_id' => [
+                    'nullable',
                     Rule::requiredIf(!(
-                        $routeName === 'tasks.index'
-                        || $routeName === 'tasks.store'
-                        || preg_match('/^projects\./', $routeName)
+                        $routeName === 'no_project_tasks.index'
+                        || $routeName === 'no_project_tasks.store'
                     )),
                     'uuid',
                     'exists:projects,id',

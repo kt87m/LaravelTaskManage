@@ -25,9 +25,8 @@ const Top: React.FC = () => {
   const onClickAddButton = () => {
     taskAccess
       .create({ done: false }, (createdTask) => {
-        searchParams.set('project_id', createdTask.project_id);
-
         history.replace({
+          pathname: `/projects/${createdTask.project_id}`,
           search: searchParams.toString(),
         });
       })
