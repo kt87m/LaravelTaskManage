@@ -13,4 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/{any_path?}', 'index')->where('any_path', '(.*)');
+Route::view('/{any_path?}', 'index')->where('any_path', '(?!api/).*');

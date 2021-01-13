@@ -30,3 +30,9 @@ Route::apiResource('projects', ProjectController::class, [
 ])->parameters([
     'projects' => 'project_id',
 ])->middleware('project');
+
+Route::fallback(function(){
+    return response()->apiError([
+        'errors' => ['route' => ['URLにプロジェクトIDが含まれていません']],
+    ], 404);
+});
