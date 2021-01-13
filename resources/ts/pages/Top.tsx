@@ -27,6 +27,7 @@ const Top: React.FC = () => {
       .create({ done: false }, (createdTask) => {
         history.replace({
           pathname: `/projects/${createdTask.project_id}`,
+          search: searchParams.toString(),
         });
       })
       .catch(console.log);
