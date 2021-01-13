@@ -105,18 +105,19 @@ class RESTResourceAccess<T extends keyof Resources> {
     const key = `${collectionKey}/${id}`;
     void mutate(key, undefined, false);
 
-    return axios.delete(`/api/${key}${location.search}`).catch((e) => {
+    return axios.delete(`/api${key}${location.search}`).catch((e) => {
       console.log(e);
       void mutate(collectionKey);
     });
   }
 
   private getKeyFromPath(id?: Id) {
+    const path = location.pathname == '/' ? '' : location.pathname;
     if (!id) {
-      const match = new RegExp(`^.*/${this.type}`).exec(location.pathname);
-      return match ? match[0] : `${location.pathname}/${this.type}`;
+      const match = new RegExp(`^.*/${this.type}`).exec(path);
+      return match ? match[0] : `${path}/${this.type}`;
     }
-    const match = new RegExp(`^.*/${this.type}/${id}`).exec(location.pathname);
+    const match = new RegExp(`^.*/${this.type}/${id}`).exec(path);
     return match ? match[0] : `/${this.type}/${id}`;
   }
 }
