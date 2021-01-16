@@ -353,4 +353,58 @@ class TaskControllerTest extends TestCase
             ['false', false],
         ];
     }
+
+    /**
+     * タスクソート
+     *
+     * @dataProvider providerSort
+     * @return void
+     */
+    public function testSortTask(string $sort, callable $makeExpected)
+    {
+        Carbon::setTestNow(new Carbon('-1 hour'));
+        $this->tasks->push(
+            Task::create([
+                'project_id' => $this->project_id,
+                'title' => '追加タスク1',
+                'done' => true,
+            ])
+        );
+        Carbon::setTestNow(new Carbon('+1 hour'));
+        $this->tasks->push(
+            Task::create([
+                'project_id' => $this->project_id,
+                'title' => '追加タスク2',
+                'done' => true,
+            ])
+        );
+        Carbon::setTestNow(new Carbon(time()));
+        
+        $expected = $makeExpected($this->tasks)->values();
+
+        $response = $this->call('GET', route('tasks.index', $this->project_id), [
+            'sort' => $sort,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson($expected->toArray());
+    }
+
+    public function providerSort()
+    {
+        return [
+            ['done', function ($tasks) { return $tasks->sortBy('done'); }],
+            ['-done', function ($tasks) { return $tasks->sortByDesc('done'); }],
+            ['created_at', function ($tasks) { return $tasks->sortBy('created_at'); }],
+            ['-created_at', function ($tasks) { return $tasks->sortByDesc('created_at'); }],
+            ['done,created_at', function ($tasks) { return $tasks->sort(function($a, $b) {
+                $done = $a->done <=> $b->done;
+                return $done ?: $a->created_at <=> $b->created_at;
+            }); }],
+            ['created_at,done', function ($tasks) { return $tasks->sort(function($a, $b) {
+                $c_at = $a->created_at <=> $b->created_at;
+                return $c_at ?: $a->done <=> $b->done;
+            }); }],
+        ];
+    }
 }
