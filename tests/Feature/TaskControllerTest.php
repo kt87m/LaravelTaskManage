@@ -44,7 +44,7 @@ class TaskControllerTest extends TestCase
             Task::create([
                 'project_id' => $task->project_id,
                 'title' => 'テストタスク3',
-                'done' => true,
+                'done' => false,
             ]),
         ]);
 
@@ -330,15 +330,18 @@ class TaskControllerTest extends TestCase
      * @dataProvider providerFilter
      * @return void
      */
-    public function testFilterTask($done, $expected)
+    public function testFilterTask($done, $expectedDone)
     {
         $response = $this->call('GET', route('tasks.index', $this->project_id), [
             'done' => $done,
         ]);
 
+        $expected = $this->tasks->filter(function ($task) use ($expectedDone) {
+            return $task->done === $expectedDone;
+        })->values()->toArray();
+
         $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment([ 'done' => $expected ]);
+            ->assertJson($expected);
     }
 
     public function providerFilter()
