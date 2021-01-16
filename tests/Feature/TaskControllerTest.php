@@ -28,20 +28,25 @@ class TaskControllerTest extends TestCase
         parent::setUp();
 
         $task = Task::create([
-            'title' => 'テストタスク',
+            'title' => 'テストタスク1',
             'done' => false,
         ]);
 
         $this->project_id = $task->project_id;
 
-        $this->tasks = [
+        $this->tasks = collect([
             $task,
             Task::create([
                 'project_id' => $task->project_id,
                 'title' => 'テストタスク2',
                 'done' => true,
             ]),
-        ];
+            Task::create([
+                'project_id' => $task->project_id,
+                'title' => 'テストタスク3',
+                'done' => true,
+            ]),
+        ]);
 
         $this->initialTaskCount = count($this->tasks);
     }
@@ -81,7 +86,7 @@ class TaskControllerTest extends TestCase
     {
         // 新規プロジェクト/タスク追加
         $newTask = Task::create([
-            'title' => 'テストタスク2',
+            'title' => '新規タスク',
             'done' => true,
         ]);
 
