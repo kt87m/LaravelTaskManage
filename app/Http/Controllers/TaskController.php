@@ -18,20 +18,12 @@ class TaskController extends Controller
         if (!$project_id) return [];
 
         $sort = $request->sort ?? '+created_at';
-        $sort = preg_match_all('/([+-]?)([^,]+)/', $sort, $matches, PREG_SET_ORDER);
-        $sortArray = [];
-        foreach ($matches as $match) {
-            $direction = !$match[1] ? 'ASC':
-                ($match[1] == '+' ? 'ASC' : 'DESC');
-            $orderBy = $match[2];
-            $sortArray[] = "$orderBy $direction";
-        }
 
         return Task::where('project_id', $project_id)
             ->when($request->has('done'), function ($query) use ($request) {
                 return $query->where('done', $request->done);
             })
-            ->orderByRaw(implode(',', $sortArray))
+            ->sort($sort)
             ->get();
     }
 
