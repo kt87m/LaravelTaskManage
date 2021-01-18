@@ -14,6 +14,9 @@ const Top: React.FC = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const filter = (/done=[^&]+/.exec(location.search) ?? [''])[0];
+  const [, direction, sort = ''] =
+    /^([+-]?)([^,]+)/.exec(searchParams.get('sort') || '') ?? [];
+  const sortByDesc = direction === '-';
 
   const onToggleCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -44,6 +47,18 @@ const Top: React.FC = () => {
     });
   };
 
+  const onChangeSort = (sort: string, sortByDesc: boolean) => {
+    if (sort) {
+      searchParams.set('sort', `${sortByDesc ? '-' : ''}${sort}`);
+    } else if (sortByDesc) {
+      searchParams.set('sort', `-created_at`);
+    } else searchParams.delete('sort');
+
+    history.replace({
+      search: searchParams.toString(),
+    });
+  };
+
   return (
     <div className="relative">
       <h2 className="text-xl md:text-2xl mb-3 text-gray-500">タスク一覧</h2>
@@ -64,6 +79,25 @@ const Top: React.FC = () => {
             <option value="done=true">完了済み</option>
             <option value="done=false">未完了</option>
           </select>
+        </label>
+        <label className="ml-5">
+          <select
+            data-testid="sort"
+            value={sort}
+            onChange={(e) => onChangeSort(e.target.value, sortByDesc)}
+            className="appearance-none ml-1 p-1 text-base outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300 rounded-none"
+          >
+            <option value="">作成日時</option>
+            <option value="updated_at">更新日時</option>
+          </select>
+          <input
+            data-testid="desc"
+            type="checkbox"
+            checked={sortByDesc}
+            onChange={() => {
+              onChangeSort(sort, !sortByDesc);
+            }}
+          />
         </label>
       </div>
 
