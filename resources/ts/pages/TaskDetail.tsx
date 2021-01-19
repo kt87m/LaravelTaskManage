@@ -38,8 +38,12 @@ const TaskDetail: React.FC = () => {
   return (
     <div>
       <div className="flex items-center">
-        <Checkbox checked={task.data.done} onChange={onToggleCheck} />
-        <h1 className="taskTitle flex-grow">
+        <Checkbox
+          checked={task.data.done}
+          onChange={onToggleCheck}
+          className="checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
+        />
+        <h1 className="taskTitle flex-grow ml-3">
           <input
             defaultValue={task.data.title}
             onChange={onTitleChange}

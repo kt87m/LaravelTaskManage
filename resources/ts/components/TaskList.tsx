@@ -32,6 +32,7 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
           <Checkbox
             checked={task.done}
             onChange={(e) => onToggleCheck(e, task.id)}
+            className="checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
           />
           <Link
             to={{
@@ -39,7 +40,7 @@ const TaskList: React.FC<Props> = ({ tasks, onToggleCheck }) => {
               search: location.search,
               state: { fromTop: true },
             }}
-            className={`linkToDetail group flex items-center flex-grow p-3 pl-0 outline-none ${
+            className={`linkToDetail group flex items-center flex-grow ml-3 p-3 pl-0 outline-none ${
               task.title ? '' : 'text-gray-500'
             } focus:text-blue-500`}
           >
