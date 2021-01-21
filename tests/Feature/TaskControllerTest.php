@@ -407,4 +407,19 @@ class TaskControllerTest extends TestCase
             }); }],
         ];
     }
+
+    /**
+     * ignore sort parameter value not exists in $attributes of model
+     *
+     * @return void
+     */
+    public function testIgnoreInvalidSortParameterValue()
+    {
+        $response = $this->call('GET', route('tasks.index', $this->project_id), [
+            'sort' => 'xxxxx',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson($this->tasks->toArray());
+    }
 }
