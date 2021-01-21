@@ -9,6 +9,13 @@ class Task extends Model
 {
     use HasFactory;
 
+    protected $attributes = [
+        'title' => null,
+        'done' => null,
+        'project_id' => null,
+        'created_at' => null,
+        'updated_at' => null,
+    ];
     protected $fillable = ['title', 'done', 'project_id'];
 
     public function project()
@@ -23,6 +30,7 @@ class Task extends Model
             $direction = !$match[1] ? 'ASC':
                 ($match[1] == '+' ? 'ASC' : 'DESC');
             $orderBy = $match[2];
+            if (!array_key_exists($orderBy, $this->getAttributes())) continue;
             $query = $query->orderBy($orderBy, $direction);
         }
         return $query;
