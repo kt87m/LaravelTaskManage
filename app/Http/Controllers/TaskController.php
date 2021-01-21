@@ -17,11 +17,13 @@ class TaskController extends Controller
         $project_id = $request->route('project_id');
         if (!$project_id) return [];
 
+        $sort = $request->sort ?? '+created_at';
+
         return Task::where('project_id', $project_id)
             ->when($request->has('done'), function ($query) use ($request) {
                 return $query->where('done', $request->done);
             })
-            ->orderBy('created_at', 'asc')
+            ->sort($sort)
             ->get();
     }
 

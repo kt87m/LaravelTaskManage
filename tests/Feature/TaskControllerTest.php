@@ -28,20 +28,25 @@ class TaskControllerTest extends TestCase
         parent::setUp();
 
         $task = Task::create([
-            'title' => 'テストタスク',
+            'title' => 'テストタスク1',
             'done' => false,
         ]);
 
         $this->project_id = $task->project_id;
 
-        $this->tasks = [
+        $this->tasks = collect([
             $task,
             Task::create([
                 'project_id' => $task->project_id,
                 'title' => 'テストタスク2',
                 'done' => true,
             ]),
-        ];
+            Task::create([
+                'project_id' => $task->project_id,
+                'title' => 'テストタスク3',
+                'done' => false,
+            ]),
+        ]);
 
         $this->initialTaskCount = count($this->tasks);
     }
@@ -81,7 +86,7 @@ class TaskControllerTest extends TestCase
     {
         // 新規プロジェクト/タスク追加
         $newTask = Task::create([
-            'title' => 'テストタスク2',
+            'title' => '新規タスク',
             'done' => true,
         ]);
 
@@ -325,15 +330,18 @@ class TaskControllerTest extends TestCase
      * @dataProvider providerFilter
      * @return void
      */
-    public function testFilterTask($done, $expected)
+    public function testFilterTask($done, $expectedDone)
     {
         $response = $this->call('GET', route('tasks.index', $this->project_id), [
             'done' => $done,
         ]);
 
+        $expected = $this->tasks->filter(function ($task) use ($expectedDone) {
+            return $task->done === $expectedDone;
+        })->values()->toArray();
+
         $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment([ 'done' => $expected ]);
+            ->assertJson($expected);
     }
 
     public function providerFilter()
@@ -344,5 +352,74 @@ class TaskControllerTest extends TestCase
             ['0', false],
             ['false', false],
         ];
+    }
+
+    /**
+     * タスクソート
+     *
+     * @dataProvider providerSort
+     * @return void
+     */
+    public function testSortTask(string $sort, callable $makeExpected)
+    {
+        Carbon::setTestNow(new Carbon('-1 hour'));
+        $this->tasks->push(
+            Task::create([
+                'project_id' => $this->project_id,
+                'title' => '追加タスク1',
+                'done' => true,
+            ])
+        );
+        Carbon::setTestNow(new Carbon('+1 hour'));
+        $this->tasks->push(
+            Task::create([
+                'project_id' => $this->project_id,
+                'title' => '追加タスク2',
+                'done' => true,
+            ])
+        );
+        Carbon::setTestNow(new Carbon(time()));
+        
+        $expected = $makeExpected($this->tasks)->values();
+
+        $response = $this->call('GET', route('tasks.index', $this->project_id), [
+            'sort' => $sort,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson($expected->toArray());
+    }
+
+    public function providerSort()
+    {
+        return [
+            ['done', function ($tasks) { return $tasks->sortBy('done'); }],
+            ['-done', function ($tasks) { return $tasks->sortByDesc('done'); }],
+            ['created_at', function ($tasks) { return $tasks->sortBy('created_at'); }],
+            ['-created_at', function ($tasks) { return $tasks->sortByDesc('created_at'); }],
+            ['done,created_at', function ($tasks) { return $tasks->sort(function($a, $b) {
+                $done = $a->done <=> $b->done;
+                return $done ?: $a->created_at <=> $b->created_at;
+            }); }],
+            ['created_at,done', function ($tasks) { return $tasks->sort(function($a, $b) {
+                $c_at = $a->created_at <=> $b->created_at;
+                return $c_at ?: $a->done <=> $b->done;
+            }); }],
+        ];
+    }
+
+    /**
+     * ignore sort parameter value not exists in $attributes of model
+     *
+     * @return void
+     */
+    public function testIgnoreInvalidSortParameterValue()
+    {
+        $response = $this->call('GET', route('tasks.index', $this->project_id), [
+            'sort' => 'xxxxx',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson($this->tasks->toArray());
     }
 }
