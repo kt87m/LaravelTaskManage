@@ -1,42 +1,19 @@
 import React from 'react';
-import { GoPlus } from 'react-icons/go';
 import { FaArrowDown, FaArrowUp, FaFilter } from 'react-icons/fa';
 import { MdSort } from 'react-icons/md';
 import { useHistory, useLocation } from 'react-router-dom';
 import TaskList from '../components/TaskList';
-import { useResource } from '../hooks/useResource';
 import { Checkbox } from '../components/Checkbox';
 
 const Top: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const taskAccess = useResource('tasks');
-  const tasks = taskAccess.index();
-
   const searchParams = new URLSearchParams(location.search);
   const filter = (/done=[^&]+/.exec(location.search) ?? [''])[0];
   const [, direction, sort = ''] =
     /^([+-]?)([^,]+)/.exec(searchParams.get('sort') || '') ?? [];
   const sortByDesc = direction === '-';
-
-  const onToggleCheck = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: number | string
-  ) => {
-    void taskAccess.update(id, { done: e.target.checked });
-  };
-
-  const onClickAddButton = () => {
-    taskAccess
-      .create({ done: false }, (createdTask) => {
-        history.replace({
-          pathname: `/projects/${createdTask.project_id}`,
-          search: searchParams.toString(),
-        });
-      })
-      .catch(console.log);
-  };
 
   const onChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
@@ -110,20 +87,7 @@ const Top: React.FC = () => {
         />
       </div>
 
-      <TaskList tasks={tasks} onToggleCheck={onToggleCheck} />
-
-      <div
-        onClick={onClickAddButton}
-        className="group cursor-pointer inline-flex items-center mt-10 duration-100 text-gray-500 hover:text-blue-500 focus-within:text-blue-500"
-      >
-        <button
-          type="button"
-          className="createTask inline-flex w-8 h-8 justify-center mr-2 p-2 rounded-full transition-all duration-500 bg-blue-500 text-white shadow-md focus:outline-none focus:bg-blue-400 focus:shadow-xl group-hover:bg-blue-400 hover:shadow-xl group-hover:shadow-xl"
-        >
-          <GoPlus className="self-center text-xl" />
-        </button>
-        タスクを追加
-      </div>
+      <TaskList />
     </div>
   );
 };
