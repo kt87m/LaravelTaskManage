@@ -12,11 +12,15 @@ class Task extends Model
     protected $attributes = [
         'title' => null,
         'done' => null,
+        'description' => null,
+        'priority' => 1,
+        'duedate' => null,
         'project_id' => null,
         'created_at' => null,
         'updated_at' => null,
     ];
-    protected $fillable = ['title', 'done', 'project_id'];
+
+    protected $fillable = ['title', 'done', 'description', 'priority', 'duedate', 'project_id'];
 
     public function project()
     {

@@ -21,6 +21,9 @@ class CreateTasksTable extends Migration
 
             $table->string('title', 512);
             $table->boolean('done');
+            $table->text('description')->nullable();
+            $table->unsignedTinyInteger('priority')->default(1);
+            $table->dateTime('duedate')->nullable();
             $table->timestamps();
         });
     }
