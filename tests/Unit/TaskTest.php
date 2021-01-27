@@ -13,6 +13,16 @@ class TaskTest extends TestCase
 
     const ID_NOT_EXISTS = 0;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->task = Task::create([
+            'title' => 'test',
+            'done' => false,
+        ]);
+    }
+
     public function testGetTaskNotExists()
     {
         $task = Task::find(self::ID_NOT_EXISTS);
@@ -21,18 +31,13 @@ class TaskTest extends TestCase
 
     public function testUpdateTask()
     {
-        $task = Task::create([
-            'title' => 'test',
-            'done' => false,
-        ]);
+        $this->assertEquals('test', $this->task->title);
+        $this->assertFalse($this->task->done);
 
-        $this->assertEquals('test', $task->title);
-        $this->assertFalse($task->done);
+        $this->task->fill(['title' => 'テスト']);
+        $this->task->save();
 
-        $task->fill(['title' => 'テスト']);
-        $task->save();
-
-        $task2 = Task::find($task->id);
+        $task2 = Task::find($this->task->id);
         $this->assertEquals('テスト', $task2->title);
     }
 }
