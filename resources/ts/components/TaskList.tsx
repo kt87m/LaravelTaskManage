@@ -9,8 +9,13 @@ import { Errors } from './Errors';
 const TaskList: React.FC = () => {
   const history = useHistory();
   const location = useLocation();
-
   const searchParams = new URLSearchParams(location.search);
+
+  const taskAccess = useResource('tasks');
+  const tasks = taskAccess.index();
+
+  if (tasks.error?.response) return <Errors error={tasks.error} />;
+  if (!tasks.data) return <p>loading...</p>;
 
   const onClickAddButton = () => {
     taskAccess
@@ -22,8 +27,6 @@ const TaskList: React.FC = () => {
       })
       .catch(console.log);
   };
-  const taskAccess = useResource('tasks');
-  const tasks = taskAccess.index();
 
   const onToggleCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -31,9 +34,6 @@ const TaskList: React.FC = () => {
   ) => {
     void taskAccess.update(id, { done: e.target.checked });
   };
-
-  if (tasks.error?.response) return <Errors error={tasks.error} />;
-  if (!tasks.data) return <p>loading...</p>;
 
   return (
     <>
