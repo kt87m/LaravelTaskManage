@@ -78,18 +78,7 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $fillData = [];
-        if (isset($request->title)) {
-            $fillData['title'] = $request->title;
-        }
-        if (isset($request->done)) {
-            $fillData['done'] = $request->done;
-        }
-
-        if (count($fillData) > 0) {
-            $task->fill($fillData);
-            $task->save();
-        }
+        $task->fill( $request->all() )->save();
 
         return $task;
     }
