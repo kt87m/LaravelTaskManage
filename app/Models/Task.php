@@ -22,6 +22,8 @@ class Task extends Model
 
     protected $fillable = ['title', 'done', 'description', 'priority', 'duedate', 'project_id'];
 
+    const DEFAULT_PRIORITY = 1;
+
     public function project()
     {
         return $this->belongsTo(Project::class);
