@@ -235,6 +235,28 @@ class TaskControllerTest extends TestCase
             ->assertJsonFragment($data);
     }
 
+    /**
+     * 優先度に制約外の値を指定するとデフォルト値に変換する
+     *
+     * @return void
+     */
+    public function testSpecifyInvalidPriority()
+    {
+        $data = [
+            'priority' => 5,
+        ];
+
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'priority' => Task::DEFAULT_PRIORITY,
+            ]);
+    }
+
     public function testCreateTask()
     {
         $data = [
