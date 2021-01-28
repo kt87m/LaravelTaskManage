@@ -213,6 +213,28 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseMissing('tasks', $data);
     }
 
+    /**
+     * オプション属性の更新
+     *
+     * @return void
+     */
+    public function testPutOptionalAttributes()
+    {
+        $data = [
+            'description' => 'some description',
+            'priority' => 3,
+            'duedate' => '2020/1/1 00:00:00',
+        ];
+
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment($data);
+    }
+
     public function testCreateTask()
     {
         $data = [
