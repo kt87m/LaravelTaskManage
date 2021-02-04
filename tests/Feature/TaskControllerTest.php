@@ -30,6 +30,7 @@ class TaskControllerTest extends TestCase
         $task = Task::create([
             'title' => 'テストタスク1',
             'done' => false,
+            'priority' => 4,
         ]);
 
         $this->project_id = $task->project_id;
@@ -194,6 +195,26 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', $data);
+    }
+
+    public function testPutTaskPathUpdateOnlySpecifiedAttributes()
+    {
+        $data = [
+            'done' => true,
+        ];
+        $oldTask1 = $this->get(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]))->original->toArray();
+        $expected = array_merge($oldTask1, $data);
+        
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment($expected);
     }
 
     public function testPutTaskPathNotExists()
