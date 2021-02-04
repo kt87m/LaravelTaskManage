@@ -81,7 +81,7 @@ class TaskController extends Controller
 
         $data = $request->all();
         $validator = Validator::make($data, [
-            'priority' => 'required|integer|min:1|max:4',
+            'priority' => 'integer|min:1|max:4',
         ]);
         if ($validator->fails())
             $data['priority'] = Task::DEFAULT_PRIORITY;
