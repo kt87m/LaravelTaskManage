@@ -12,7 +12,7 @@ export type Task = ResourceBase & {
   done: boolean;
   description: string | null;
   priority: 1 | 2 | 3 | 4;
-  duedate: string | null;
+  duedate: Date | null;
 };
 export type Project = ResourceBase & {
   name: string;

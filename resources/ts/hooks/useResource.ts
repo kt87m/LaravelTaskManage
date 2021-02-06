@@ -1,6 +1,30 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useSWR, { responseInterface, mutate } from 'swr';
+import { format } from 'date-fns';
+
 import { ApiError, Id, ResourceBase, Resources } from '../types/api';
+
+const resourceApi = axios.create();
+resourceApi.interceptors.request.use((config) => {
+  if (!config.data) return config;
+  const data = config.data as { duedate?: Date | null | string };
+  if (data.duedate instanceof Date) {
+    data.duedate = format(data.duedate, 'yyyy-MM-dd HH:mm:ss');
+  }
+  return config;
+});
+resourceApi.interceptors.response.use(
+  (
+    res: AxiosResponse<{
+      duedate?: string | null | Date;
+    }>
+  ) => {
+    if (typeof res.data.duedate == 'string') {
+      res.data.duedate = new Date(res.data.duedate.replace(' ', 'T'));
+    }
+    return res;
+  }
+);
 
 export function useResource<T extends keyof Resources>(
   type: T
@@ -20,7 +44,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     const { error, data } = useSWR<Array<Resources[T]>, AxiosError<ApiError>>(
       key,
       () => {
-        return axios
+        return resourceApi
           .get<Resources[T][], AxiosResponse<Resources[T][]>>(
             `/api${key}${location.search}`
           )
@@ -38,7 +62,7 @@ class RESTResourceAccess<T extends keyof Resources> {
   get(id: Id): RESTResource<T> {
     const key = this.getKeyFromPath(id);
     const response = useSWR<Resources[T], AxiosError<ApiError>>(key, () => {
-      return axios
+      return resourceApi
         .get<Resources[T], AxiosResponse<Resources[T]>>(
           `/api${key}${location.search}`
         )
@@ -52,7 +76,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     onSuccess?: (res: Resources[T]) => void
   ) {
     const key = this.getKeyFromPath();
-    return axios
+    return resourceApi
       .post<Resources[T], AxiosResponse<Resources[T]>>(
         `/api${key}${location.search}`,
         data
@@ -82,7 +106,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     const key = `${collectionKey}/${id}`;
     void mutate(key, (data: Resources[T]) => ({ ...data, ...diff }), false);
 
-    return axios
+    return resourceApi
       .put<Resources[T]>(`/api${key}${location.search}`, diff)
       .catch((e) => {
         console.log(e);
@@ -105,7 +129,7 @@ class RESTResourceAccess<T extends keyof Resources> {
     const key = `${collectionKey}/${id}`;
     void mutate(key, undefined, false);
 
-    return axios.delete(`/api${key}${location.search}`).catch((e) => {
+    return resourceApi.delete(`/api${key}${location.search}`).catch((e) => {
       console.log(e);
       void mutate(collectionKey);
     });
