@@ -78,6 +78,7 @@ const TaskListTools: React.FC = () => {
           onChangeSort(sort, !sortByDesc);
         }}
         className="bg-gray-500 border-gray-500 hover:bg-blue-300 hover:border-transparent focus:bg-blue-300 focus:border-transparent focus-checked:bg-blue-300"
+        wrapperClassName="self-center"
         uncheckedicon={FaArrowUp}
         checkedicon={FaArrowDown}
       />

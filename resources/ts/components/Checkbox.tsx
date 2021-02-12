@@ -5,11 +5,13 @@ import { ImCheckmark } from 'react-icons/im';
 type Props = {
   checkedicon?: IconType;
   uncheckedicon?: IconType;
+  wrapperClassName?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Checkbox: React.FC<Props> = ({
   checked,
   className = '',
+  wrapperClassName = '',
   checkedicon = ImCheckmark,
   uncheckedicon,
   ...props
@@ -17,7 +19,7 @@ export const Checkbox: React.FC<Props> = ({
   const Icon = checked ? checkedicon : uncheckedicon;
 
   return (
-    <span className="relative h-5 leading-none self-center">
+    <span className={`relative h-5 leading-none ${wrapperClassName}`}>
       <input
         {...props}
         checked={checked}
