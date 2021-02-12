@@ -13,18 +13,22 @@ resourceApi.interceptors.request.use((config) => {
   }
   return config;
 });
-resourceApi.interceptors.response.use(
-  (
-    res: AxiosResponse<{
-      duedate?: string | null | Date;
-    }>
-  ) => {
-    if (typeof res.data.duedate == 'string') {
-      res.data.duedate = new Date(res.data.duedate.replace(' ', 'T'));
-    }
-    return res;
+
+type Task = {
+  duedate?: string | null | Date;
+};
+resourceApi.interceptors.response.use((res: AxiosResponse<Task | Task[]>) => {
+  if (Array.isArray(res.data)) {
+    res.data = res.data.map((item) => {
+      if (typeof item.duedate == 'string')
+        item.duedate = new Date(item.duedate.replace(' ', 'T'));
+      return item;
+    });
+  } else if (typeof res.data.duedate == 'string') {
+    res.data.duedate = new Date(res.data.duedate.replace(' ', 'T'));
   }
-);
+  return res;
+});
 
 export function useResource<T extends keyof Resources>(
   type: T
