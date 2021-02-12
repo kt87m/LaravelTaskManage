@@ -68,6 +68,8 @@ const TaskListTools: React.FC = () => {
         >
           <option value="">作成日時</option>
           <option value="updated_at">更新日時</option>
+          <option value="priority">優先度</option>
+          <option value="duedate">締め切り</option>
         </select>
       </label>
       <Checkbox
