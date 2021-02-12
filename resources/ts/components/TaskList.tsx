@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { GoPlus } from 'react-icons/go';
+import { FaFlag } from 'react-icons/fa';
 
 import { useResource } from '../hooks/useResource';
 import { Checkbox } from './Checkbox';
@@ -59,6 +60,13 @@ const TaskList: React.FC = () => {
                 task.title ? '' : 'text-gray-500'
               } focus:text-blue-500`}
             >
+              {task.priority > 1 && (
+                <FaFlag
+                  className={`mr-2 text-${
+                    ['blue', 'yellow', 'red'][task.priority - 2]
+                  }-500`}
+                />
+              )}
               {task.title || '名称未設定タスク'}
             </Link>
           </li>
