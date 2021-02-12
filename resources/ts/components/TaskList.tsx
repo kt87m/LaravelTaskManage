@@ -6,6 +6,8 @@ import { FaFlag } from 'react-icons/fa';
 import { useResource } from '../hooks/useResource';
 import { Checkbox } from './Checkbox';
 import { Errors } from './Errors';
+import { format } from 'date-fns';
+import { CgSandClock } from 'react-icons/cg';
 
 const TaskList: React.FC = () => {
   const history = useHistory();
@@ -68,6 +70,12 @@ const TaskList: React.FC = () => {
                 />
               )}
               {task.title || '名称未設定タスク'}
+              {task.duedate && (
+                <div className="flex items-center ml-auto text-sm">
+                  <CgSandClock className="mr-1 text-xl text-gray-500" />
+                  {format(task.duedate, 'yyyy/MM/dd HH:mm')}
+                </div>
+              )}
             </Link>
           </li>
         ))}
