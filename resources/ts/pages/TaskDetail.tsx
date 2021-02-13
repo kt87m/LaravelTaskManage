@@ -150,6 +150,14 @@ const TaskDetail: React.FC = () => {
                   clearable
                   ampm={false}
                   margin="none"
+                  inputProps={{
+                    style: {
+                      color:
+                        task.data.duedate && task.data.duedate <= new Date()
+                          ? '#f56565'
+                          : '',
+                    },
+                  }}
                 />
               </MuiPickersUtilsProvider>
             </dd>

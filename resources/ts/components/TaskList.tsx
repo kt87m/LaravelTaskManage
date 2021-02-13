@@ -76,8 +76,15 @@ const TaskList: React.FC = () => {
                 </div>
               </div>
               {task.duedate && (
-                <div className="w-full md:w-auto ml-auto mt-2 md:mt-0 flex items-center text-xs md:text-sm">
-                  <CgSandClock className="-ml-1 mr-1 text-base md:text-xl text-gray-500" />
+                <div
+                  className={`w-full md:w-auto ml-auto mt-2 md:mt-0 flex items-center text-xs md:text-sm
+                  ${
+                    task.duedate <= new Date()
+                      ? 'text-red-500'
+                      : 'text-gray-600'
+                  }`}
+                >
+                  <CgSandClock className="-ml-1 mr-1 text-base" />
                   {format(task.duedate, 'yyyy/MM/dd HH:mm')}
                 </div>
               )}
