@@ -1,8 +1,6 @@
 declare const expect: jest.Expect; // cypressとの競合回避  TODO: マシな回避策探す
 import { renderHook } from '@testing-library/react-hooks';
 
-import { useResource } from '../hooks/useResource';
-
 jest.mock('swr');
 import _useSWR, { cache as _cache } from 'swr';
 const {
@@ -19,6 +17,9 @@ mockedUseSWR.mockImplementation((key, fn) => {
 jest.mock('axios');
 import axios from 'axios';
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create.mockReturnValue(mockedAxios);
+
+import { useResource } from '../hooks/useResource';
 
 describe('generate swr key and request url', () => {
   afterEach(() => {

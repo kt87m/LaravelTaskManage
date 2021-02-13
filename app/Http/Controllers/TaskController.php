@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
@@ -78,18 +79,14 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $fillData = [];
-        if (isset($request->title)) {
-            $fillData['title'] = $request->title;
-        }
-        if (isset($request->done)) {
-            $fillData['done'] = $request->done;
-        }
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'priority' => 'integer|min:1|max:4',
+        ]);
+        if ($validator->fails())
+            $data['priority'] = Task::DEFAULT_PRIORITY;
 
-        if (count($fillData) > 0) {
-            $task->fill($fillData);
-            $task->save();
-        }
+        $task->fill($data)->save();
 
         return $task;
     }

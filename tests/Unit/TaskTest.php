@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,6 +12,31 @@ class TaskTest extends TestCase
 
     const ID_NOT_EXISTS = 0;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->task = Task::create([
+            'title' => 'test',
+            'done' => false,
+            'description' => 'test description',
+            'priority' => 2,
+            'duedate' => '2020/1/1 00:00:00',
+        ]);
+    }
+
+    /**
+     * 生成結果の確認
+     *
+     * @return void
+     */
+    public function testCreate()
+    {
+        $this->assertEquals('test description', $this->task->description);
+        $this->assertEquals(2, $this->task->priority);
+        $this->assertEquals('2020/1/1 00:00:00', $this->task->duedate);
+    }
+
     public function testGetTaskNotExists()
     {
         $task = Task::find(self::ID_NOT_EXISTS);
@@ -21,18 +45,13 @@ class TaskTest extends TestCase
 
     public function testUpdateTask()
     {
-        $task = Task::create([
-            'title' => 'test',
-            'done' => false,
-        ]);
+        $this->assertEquals('test', $this->task->title);
+        $this->assertFalse($this->task->done);
 
-        $this->assertEquals('test', $task->title);
-        $this->assertFalse($task->done);
+        $this->task->fill(['title' => 'テスト']);
+        $this->task->save();
 
-        $task->fill(['title' => 'テスト']);
-        $task->save();
-
-        $task2 = Task::find($task->id);
+        $task2 = Task::find($this->task->id);
         $this->assertEquals('テスト', $task2->title);
     }
 }

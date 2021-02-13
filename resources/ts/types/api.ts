@@ -10,6 +10,9 @@ export type Task = ResourceBase & {
   project_id: string;
   title: string;
   done: boolean;
+  description: string | null;
+  priority: 1 | 2 | 3 | 4;
+  duedate: Date | null;
 };
 export type Project = ResourceBase & {
   name: string;

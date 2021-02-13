@@ -8,8 +8,11 @@ import {
 } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 
+jest.mock('axios');
 import axios from 'axios';
-axios.get = jest.fn().mockResolvedValue({ data: [] });
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create.mockReturnValue(mockedAxios);
+mockedAxios.get.mockResolvedValue({ data: [] });
 
 import { cache } from 'swr';
 

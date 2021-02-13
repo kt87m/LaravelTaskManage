@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Task;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,9 @@ class CreateTasksTable extends Migration
 
             $table->string('title', 512);
             $table->boolean('done');
+            $table->text('description')->nullable();
+            $table->unsignedTinyInteger('priority')->default(Task::DEFAULT_PRIORITY);
+            $table->dateTime('duedate')->nullable();
             $table->timestamps();
         });
     }

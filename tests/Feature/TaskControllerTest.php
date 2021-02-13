@@ -30,6 +30,7 @@ class TaskControllerTest extends TestCase
         $task = Task::create([
             'title' => 'テストタスク1',
             'done' => false,
+            'priority' => 4,
         ]);
 
         $this->project_id = $task->project_id;
@@ -196,6 +197,26 @@ class TaskControllerTest extends TestCase
         $this->assertDatabaseHas('tasks', $data);
     }
 
+    public function testPutTaskPathUpdateOnlySpecifiedAttributes()
+    {
+        $data = [
+            'done' => true,
+        ];
+        $oldTask1 = $this->get(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]))->original->toArray();
+        $expected = array_merge($oldTask1, $data);
+        
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment($expected);
+    }
+
     public function testPutTaskPathNotExists()
     {
         $data = [
@@ -211,6 +232,50 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(404);
 
         $this->assertDatabaseMissing('tasks', $data);
+    }
+
+    /**
+     * オプション属性の更新
+     *
+     * @return void
+     */
+    public function testPutOptionalAttributes()
+    {
+        $data = [
+            'description' => 'some description',
+            'priority' => 3,
+            'duedate' => '2020/1/1 00:00:00',
+        ];
+
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment($data);
+    }
+
+    /**
+     * 優先度に制約外の値を指定するとデフォルト値に変換する
+     *
+     * @return void
+     */
+    public function testSpecifyInvalidPriority()
+    {
+        $data = [
+            'priority' => 5,
+        ];
+
+        $response = $this->put(route('tasks.update', [
+            $this->project_id,
+            $this->tasks[0]->id,
+        ]), $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'priority' => Task::DEFAULT_PRIORITY,
+            ]);
     }
 
     public function testCreateTask()
