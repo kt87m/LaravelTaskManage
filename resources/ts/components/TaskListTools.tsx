@@ -38,7 +38,7 @@ const TaskListTools: React.FC = () => {
   };
 
   return (
-    <div className="flex absolute top-0 right-0">
+    <div className="flex absolute top-0 right-0 transform md:transform-none origin-top-right scale-75">
       <label className="flex items-center">
         <FaFilter
           title="フィルター"
@@ -55,7 +55,7 @@ const TaskListTools: React.FC = () => {
           <option value="done=false">未完了</option>
         </select>
       </label>
-      <label className="flex items-center ml-6">
+      <label className="flex items-center ml-3 md:ml-6">
         <MdSort
           title="ソート"
           className="inline align-middle text-2xl sm:text-3xl text-gray-500"
@@ -80,7 +80,7 @@ const TaskListTools: React.FC = () => {
           onChangeSort(sort, !sortByDesc);
         }}
         className="bg-gray-500 border-gray-500 hover:bg-blue-300 hover:border-transparent focus:bg-blue-300 focus:border-transparent focus-checked:bg-blue-300"
-        wrapperClassName="self-center"
+        wrapperClassName="mx-3 md:mx-0 self-center transform md:transform-none scale-125"
         uncheckedicon={FaArrowUp}
         checkedicon={FaArrowDown}
       />
