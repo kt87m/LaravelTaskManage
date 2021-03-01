@@ -60,10 +60,10 @@ context('update task state globaly', () => {
 
     cy.visit(`/projects/${project.id}/tasks/${task1.id}`);
     cy.wait(500) // wait task loading
-      .get('input[type="checkbox"]')
-      .as('checkbox_detail')
+      .get('.isDone')
+      .as('checkbox_done')
       .should('be.checked');
-    cy.get('@checkbox_detail').uncheck().should('not.be.checked');
+    cy.get('@checkbox_done').uncheck().should('not.be.checked');
 
     cy.visit(`/projects/${project.id}`);
     cy.get('@checkbox').should('not.be.checked');

@@ -58,7 +58,6 @@ const InfoArea: React.FC = () => {
 
           <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
             <Tooltip
-              interactive
               arrow
               open={tooltipOpen}
               title={

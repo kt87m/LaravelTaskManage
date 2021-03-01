@@ -52,7 +52,10 @@ const TaskDetail: React.FC = () => {
   const onClickDeleteTask = () => {
     void task.deleteSelf().then(() => {
       if (history.location.state?.fromTop) history.goBack();
-      else task.data && history.replace(`/projects/${task.data.project_id}`);
+      else
+        history.replace(
+          `${location.pathname.replace(/\/tasks\/.+$/, '')}${location.search}`
+        );
     });
   };
 
@@ -62,11 +65,12 @@ const TaskDetail: React.FC = () => {
         <Checkbox
           checked={task.data.done}
           onChange={onToggleCheck}
-          className="checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
+          className="isDone checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
         />
         <h1 className="taskTitle flex-grow ml-3">
           <input
             defaultValue={task.data.title}
+            placeholder="タスク名を入力"
             onChange={onTitleChange}
             className="w-full p-1 border-gray-400 border-solid border rounded-sm"
           />
@@ -105,7 +109,7 @@ const TaskDetail: React.FC = () => {
                 value={task.data.priority}
                 onChange={(e) =>
                   void task.update({
-                    priority: e.target.value as 1 | 2 | 3 | 4,
+                    priority: e.target.value,
                   })
                 }
               >
@@ -150,6 +154,7 @@ const TaskDetail: React.FC = () => {
                   clearable
                   ampm={false}
                   margin="none"
+                  inputVariant="standard"
                   inputProps={{
                     style: {
                       color:
