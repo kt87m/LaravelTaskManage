@@ -65,7 +65,7 @@ const TaskDetail: React.FC = () => {
         <Checkbox
           checked={task.data.done}
           onChange={onToggleCheck}
-          className="checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
+          className="isDone checked:bg-blue-500 focus:border-blue-700 focus-checked:bg-blue-700"
         />
         <h1 className="taskTitle flex-grow ml-3">
           <input
