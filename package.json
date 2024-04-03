@@ -2,17 +2,17 @@
     "private": true,
     "scripts": {
         "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "npm run development -- --watch",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot --allowed-hosts all --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
         "type-check": "tsc --pretty --noEmit",
         "format": "prettier --write **/*.{js,ts,tsx}",
         "lint": "eslint --ext .ts,.tsx resources/ts",
         "test": "jest && php artisan test && npx cypress run --spec 'cypress/integration/*'",
         "prod": "npm run production",
         "build": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "production": "mix --production"
     },
     "devDependencies": {
         "@babel/preset-react": "^7.24.1",
