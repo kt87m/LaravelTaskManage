@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const path = require('path');
 
 const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, useLocation, matchPath } from 'react-router-dom';
+import { Routes, Route, useLocation, matchPath } from 'react-router-dom';
 import { Modal } from './Modal';
 
 import TaskDetail from '../pages/TaskDetail';
@@ -15,16 +15,17 @@ const App: React.FC = () => {
       <div className="container mx-auto p-3 sm:p-5 md:py-10 md:px-0">
         <Modal
           open={
-            !!matchPath(location.pathname, `/projects/:projectId/tasks/:id`)
+            !!matchPath(`/projects/:projectId/tasks/:id`, location.pathname)
           }
         >
-          <Route path={`/projects/:projectId/tasks/:id`}>
-            <TaskDetail />
-          </Route>
+          <Routes>
+            <Route path={`/*`} element={null} />
+            <Route path={`/projects/:projectId/tasks/:id`} element={<TaskDetail />} />
+          </Routes>
         </Modal>
-        <Route path="/">
-          <Top />
-        </Route>
+        <Routes>
+          <Route path="/*" element={<Top />} />
+        </Routes>
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Checkbox } from '../components/Checkbox';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { AiTwotoneDelete } from 'react-icons/ai';
@@ -15,7 +15,8 @@ import { Errors } from '../components/Errors';
 
 const TaskDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const history = useHistory<{ fromTop?: boolean } | undefined>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const task = useResource('tasks').get(id);
   const titleChangeBuffer = useCallbackBuffer();
@@ -51,10 +52,11 @@ const TaskDetail: React.FC = () => {
 
   const onClickDeleteTask = () => {
     void task.deleteSelf().then(() => {
-      if (history.location.state?.fromTop) history.goBack();
+      if (location.state?.fromTop) navigate(-1);
       else
-        history.replace(
-          `${location.pathname.replace(/\/tasks\/.+$/, '')}${location.search}`
+        navigate(
+          `${location.pathname.replace(/\/tasks\/.+$/, '')}${location.search}`,
+          { replace: true }
         );
     });
   };

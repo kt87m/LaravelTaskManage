@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState, PropsWithChildren } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { SwipeableDrawer, useMediaQuery } from '@material-ui/core';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
@@ -25,14 +25,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type ModalProps = {
+type ModalProps = PropsWithChildren<{
   open: boolean;
-};
+}>;
 
 export const Modal: React.FC<ModalProps> = ({ children, open }) => {
   const [_open, setOpen] = useState(open);
   useEffect(() => setOpen(open), [open]);
-  const history = useHistory<{ fromTop?: boolean } | undefined>();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const md = useMediaQuery('(min-width:768px)');
   const classes = useStyles({ md });
@@ -46,12 +48,13 @@ export const Modal: React.FC<ModalProps> = ({ children, open }) => {
         if (!_open) return;
         setOpen(false);
         setTimeout(() => {
-          if (history.location.state?.fromTop) history.goBack();
+          if (location.state?.fromTop) navigate(-1);
           else
-            history.replace(
+            navigate(
               `${location.pathname.replace(/\/tasks\/.+$/, '')}${
                 location.search
-              }`
+              }`,
+              { replace: true }
             );
         }, 200);
       }}
