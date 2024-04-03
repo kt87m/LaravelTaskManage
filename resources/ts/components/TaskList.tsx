@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoPlus } from 'react-icons/go';
 import { FaFlag } from 'react-icons/fa';
 
@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { CgSandClock } from 'react-icons/cg';
 
 const TaskList: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
@@ -23,10 +23,10 @@ const TaskList: React.FC = () => {
   const onClickAddButton = () => {
     taskAccess
       .create({ done: false }, (createdTask) => {
-        history.replace({
+        navigate({
           pathname: `/projects/${createdTask.project_id}`,
           search: searchParams.toString(),
-        });
+        }, { replace: true });
       })
       .catch(console.log);
   };
@@ -57,8 +57,8 @@ const TaskList: React.FC = () => {
               to={{
                 pathname: `/projects/${task.project_id}/tasks/${task.id}`,
                 search: location.search,
-                state: { fromTop: true },
               }}
+              state={{ fromTop: true }}
               className={`linkToDetail overflow-hidden group flex items-center flex-wrap md:flex-no-wrap flex-grow ml-3 p-3 pl-0 outline-none ${
                 task.title ? '' : 'text-gray-500'
               } focus:text-blue-500`}

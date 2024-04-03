@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useCallbackBuffer from '../hooks/useCallbackBuffer';
 import { useResource } from '../hooks/useResource';
-import { GoPlus, GoCloudUpload } from 'react-icons/go';
+import { GoPlus, GoCloud} from 'react-icons/go';
 import { BsQuestion } from 'react-icons/bs';
 import { ClickAwayListener, Tooltip } from '@material-ui/core';
 
@@ -124,7 +124,7 @@ const PreserveProjectButton: React.FC<{
       className ?? ''
     }`}
   >
-    <GoCloudUpload className="text-lg mr-1" />
+    <GoCloud className="text-lg mr-1" />
     プロジェクトを保存する
   </button>
 );

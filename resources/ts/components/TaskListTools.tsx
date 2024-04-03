@@ -1,11 +1,11 @@
 import React from 'react';
 import { FaArrowDown, FaArrowUp, FaFilter } from 'react-icons/fa';
 import { MdSort } from 'react-icons/md';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Checkbox } from '../components/Checkbox';
 
 const TaskListTools: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
@@ -20,9 +20,9 @@ const TaskListTools: React.FC = () => {
       searchParams.set(key, value);
     } else searchParams.delete('done');
 
-    history.replace({
+    navigate({
       search: searchParams.toString(),
-    });
+    }, { replace: true });
   };
 
   const onChangeSort = (sort: string, sortByDesc: boolean) => {
@@ -32,9 +32,9 @@ const TaskListTools: React.FC = () => {
       searchParams.set('sort', `-created_at`);
     } else searchParams.delete('sort');
 
-    history.replace({
+    navigate({
       search: searchParams.toString(),
-    });
+    }, { replace: true });
   };
 
   return (
@@ -51,8 +51,8 @@ const TaskListTools: React.FC = () => {
           className="appearance-none ml-1 p-1 text-base outline-none border-b-2 border-gray-500 focus:border-0 focus:border-blue-300 rounded-none"
         >
           <option value="">全て</option>
-          <option value="done=true">完了済み</option>
-          <option value="done=false">未完了</option>
+          <option value="done=1">完了済み</option>
+          <option value="done=0">未完了</option>
         </select>
       </label>
       <label className="flex items-center ml-3 md:ml-6">
@@ -79,7 +79,7 @@ const TaskListTools: React.FC = () => {
         onChange={() => {
           onChangeSort(sort, !sortByDesc);
         }}
-        className="bg-gray-500 border-gray-500 hover:bg-blue-300 hover:border-transparent focus:bg-blue-300 focus:border-transparent focus-checked:bg-blue-300"
+        className="!bg-gray-500 border-gray-500 !hover:bg-blue-300 hover:border-transparent !focus:bg-blue-300 focus:border-transparent !focus-checked:bg-blue-300"
         wrapperClassName="mx-3 md:mx-0 self-center transform md:transform-none scale-125"
         uncheckedicon={FaArrowUp}
         checkedicon={FaArrowDown}

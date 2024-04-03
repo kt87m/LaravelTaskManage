@@ -37,11 +37,11 @@ describe('top page', () => {
     const select = getByTestId('filter');
     fireEvent.change(select, {
       target: {
-        value: 'done=true',
+        value: 'done=1',
       },
     });
 
-    expect(history.location.search).toMatch(/done=true/);
+    expect(history.location.search).toMatch(/done=1/);
   });
 
   it('should change search params on select sort type and sort direction', async () => {

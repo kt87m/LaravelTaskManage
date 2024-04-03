@@ -35,7 +35,7 @@ class ProjectMiddleware
         // extend project expiration
         if ($project && !$project->preserved) {
             $lifespan = Project::TEMP_PROJECT_SURVIVE_HOUR_SINCE_LAST_ACCESS;
-            $project->expiration = now("+$lifespan hour");
+            $project->expiration = now()->addHour($lifespan);
             $project->save();
         }
 
